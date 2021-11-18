@@ -16,9 +16,9 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(TmpException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionDTO baseHandler(TmpException exception) {
-        log.error(exception.getMessage());
-        return new ExceptionDTO(exception.getMessage());
+    public ExceptionDTO baseHandler(TmpException e) {
+        log.error(e.getMessage(), e);
+        return new ExceptionDTO(e.getMessage());
     }
 
 }

@@ -1,0 +1,3 @@
+type,name,amount
+TAXES,taxes_min_points,2
+TAXES,taxes_max_swords,2
