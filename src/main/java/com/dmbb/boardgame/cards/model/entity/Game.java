@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,9 +30,12 @@ public class Game {
     private Set<Player> players = new HashSet<>();
 
     @OneToMany(mappedBy = "game")
-    private Set<Card> cards = new HashSet<>();
+    private List<Card> cards = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private GameStatus status;
+
+    @Column(name = "active_player_id")
+    private int activePlayerId;
 
 }

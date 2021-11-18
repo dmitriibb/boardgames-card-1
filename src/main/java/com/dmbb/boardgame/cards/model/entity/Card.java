@@ -1,13 +1,18 @@
 package com.dmbb.boardgame.cards.model.entity;
 
+import com.dmbb.boardgame.cards.model.dto.CardDTO;
 import com.dmbb.boardgame.cards.model.enums.CardStatus;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "cards")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
 public class Card {
 
     @Id
@@ -19,9 +24,8 @@ public class Card {
     @JoinColumn(name = "player_id")
     private Player player;
 
-    @ManyToOne
     @JoinColumn(name = "card_description_id")
-    private CardDescription cardDescription;
+    private int cardDescriptionId;
 
     @ManyToOne
     @JoinColumn(name = "game_id")
@@ -31,5 +35,13 @@ public class Card {
 
     @Enumerated(EnumType.STRING)
     private CardStatus status;
+
+    public CardDTO toDTO() {
+        CardDTO dto = new CardDTO();
+        dto.setId(id);
+        dto.setDescriptionId(cardDescriptionId);
+        dto.setStatus(status);
+        return dto;
+    }
 
 }

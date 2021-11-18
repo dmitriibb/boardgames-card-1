@@ -1,20 +1,27 @@
 package com.dmbb.boardgame.cards.service.impl;
 
 import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
+import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
+import com.dmbb.boardgame.cards.model.entity.Game;
+import com.dmbb.boardgame.cards.model.enums.CardStatus;
 import com.dmbb.boardgame.cards.repository.CardDescriptionRepository;
-import com.dmbb.boardgame.cards.service.CardDescriptionService;
+import com.dmbb.boardgame.cards.repository.CardRepository;
+import com.dmbb.boardgame.cards.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CardDescriptionServiceImpl implements CardDescriptionService {
+public class CardServiceImpl implements CardService {
 
     private final CardDescriptionRepository cardDescriptionRepository;
+    private final CardRepository cardRepository;
 
     @Override
     public List<CardDescription> getAll() {
@@ -22,17 +29,29 @@ public class CardDescriptionServiceImpl implements CardDescriptionService {
     }
 
     @Override
-    public List<CardDescriptionDTO> getFullDesk() {
-        List<CardDescriptionDTO> desk = new ArrayList<>();
+    public List<Card> createNewDeskForGame(Game game) {
+        List<Card> cards = new ArrayList<>();
 
-        getAll().forEach(card -> {
-            for (int i = 0; i < card.getAmount(); i++) {
-                desk.add(entityToDTO(card));
+        cardDescriptionRepository.findAll().forEach(cd -> {
+            for (int i = 0; i < cd.getAmount(); i++) {
+                Card card = new Card();
+                card.setGame(game);
+                card.setCardDescriptionId(cd.getId());
+                card.setCoin(true);
+                card.setStatus(CardStatus.DESK);
+                cards.add(card);
             }
         });
-
-        return desk;
+        Collections.shuffle(cards);
+        cardRepository.saveAll(cards);
+        return cardRepository.findAllByGame(game);
     }
+
+    @Override
+    public void save(Card card) {
+        cardRepository.save(card);
+    }
+
 
     private CardDescriptionDTO entityToDTO(CardDescription entity) {
         CardDescriptionDTO dto = new CardDescriptionDTO();

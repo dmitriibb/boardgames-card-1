@@ -26,6 +26,15 @@ public class GameController {
         return gameService.createNewGame(user, dto);
     }
 
+    @PutMapping("/start/{gameId}")
+    public void startGame(@AuthenticationPrincipal User user, @PathVariable int gameId) {
+        gameService.startGame(user, gameId);
+    }
+
+    @PutMapping("/join/{gameId}")
+    public void joinGame(@AuthenticationPrincipal User user, @PathVariable int gameId) {
+        gameService.startGame(user, gameId);
+    }
 
 
 }

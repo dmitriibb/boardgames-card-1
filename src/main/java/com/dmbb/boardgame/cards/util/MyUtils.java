@@ -1,5 +1,6 @@
 package com.dmbb.boardgame.cards.util;
 
+import com.dmbb.boardgame.cards.model.entity.Card;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -9,10 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -55,6 +53,10 @@ public class MyUtils {
             map.put(headers[i], line[i]);
         }
         return map;
+    }
+
+    public static Queue<Card> cardListToQueue(List<Card> cards) {
+        return new LinkedList<>(cards);
     }
 
 }

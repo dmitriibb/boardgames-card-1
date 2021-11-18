@@ -1,7 +1,7 @@
 package com.dmbb.boardgame.cards.controller;
 
 import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
-import com.dmbb.boardgame.cards.service.CardDescriptionService;
+import com.dmbb.boardgame.cards.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardController {
 
-    private final CardDescriptionService cardDescriptionService;
+    private final CardService cardService;
 
-    @GetMapping("/desk")
-    public List<CardDescriptionDTO> getFullDesk() {
-        return cardDescriptionService.getFullDesk();
-    }
 
 
 }

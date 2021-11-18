@@ -35,6 +35,7 @@ create table games (
     name varchar(100) not null,
     admin_id int(10) not null,
     status varchar(50) not null,
+    active_player_id int(10) not null,
     constraint games_admin_id_fk foreign key(admin_id) references users(id)
 );
 
@@ -42,6 +43,13 @@ create table players (
     id int(10) PRIMARY KEY AUTO_INCREMENT,
     game_id int(10) not null,
     user_id int(10) not null,
+    order int(2) not null default 0,
+    coins int(2) not null default 0,
+    points int(2) not null default 0,
+    swords int(2) not null default 0,
+    crosses int(2) not null default 0,
+    houses int(2) not null default 0,
+    anchors int(2) not null default 0,
     constraint players_game_id_fk foreign key(game_id) references games(id),
     constraint players_user_id_fk foreign key(user_id) references users(id),
     index players_game_id_indx (game_id),

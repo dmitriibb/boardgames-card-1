@@ -17,9 +17,9 @@ public class GameDTO {
 
     private String name;
 
-    private PlayerDTO admin;
+    private PlayerShortDTO admin;
 
-    private Set<PlayerDTO> players;
+    private Set<PlayerShortDTO> players;
 
     private GameStatus status;
 

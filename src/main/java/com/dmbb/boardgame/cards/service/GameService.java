@@ -9,8 +9,12 @@ public interface GameService {
 
     GameDTO createNewGame(User user, GameDTO newGameDTO);
 
+    void joinGame(User user, int gameId);
+
     List<GameDTO> getAllGames();
 
     List<GameDTO> getGamesByAdmin(User user);
+
+    void startGame(User admin, int gameId);
 
 }
