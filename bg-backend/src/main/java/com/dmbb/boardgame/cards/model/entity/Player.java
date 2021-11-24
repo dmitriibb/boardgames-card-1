@@ -30,6 +30,7 @@ public class Player {
 
     private PlayerStatus status;
 
+    @Column(name = "player_order")
     private int order;
 
     private int coins;

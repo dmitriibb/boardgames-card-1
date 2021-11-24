@@ -1,6 +1,8 @@
 package com.dmbb.boardgame.cards.controller;
 
-import com.dmbb.boardgame.cards.model.dto.GameDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoShortDTO;
+import com.dmbb.boardgame.cards.model.dto.NewGameDTO;
 import com.dmbb.boardgame.cards.model.entity.User;
 import com.dmbb.boardgame.cards.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -17,13 +19,18 @@ public class GameController {
     private final GameService gameService;
 
     @GetMapping("/all")
-    public List<GameDTO> getAll() {
-        return gameService.getAllGames();
+    public List<GameInfoShortDTO> getAll(@AuthenticationPrincipal User user) {
+        return gameService.getAllGamesShort(user);
+    }
+
+    @GetMapping("/{id}")
+    public GameInfoDTO getGameById(@AuthenticationPrincipal User user, @PathVariable int id) {
+        return gameService.getGameInfoById(user, id);
     }
 
     @PostMapping("/new")
-    public GameDTO createNewGame(@AuthenticationPrincipal User user, @RequestBody GameDTO dto) {
-        return gameService.createNewGame(user, dto);
+    public GameInfoShortDTO createNewGame(@AuthenticationPrincipal User user, @RequestBody NewGameDTO gameDTO) {
+        return gameService.createNewGame(user, gameDTO);
     }
 
     @PutMapping("/start/{gameId}")

@@ -1,0 +1,12 @@
+.row-header {
+  border: black solid 2px;
+}
+.user-info-column{
+  background-color: #4facff;
+  height: 90vh;
+}
+
+.games-list-column{
+  background-color: #E86850;
+  height: 90vh;
+}

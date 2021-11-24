@@ -36,6 +36,7 @@ create table games (
     admin_id int(10) not null,
     status varchar(50) not null,
     active_player_id int(10) not null,
+    password varchar(50),
     constraint games_admin_id_fk foreign key(admin_id) references users(id)
 );
 
@@ -43,7 +44,8 @@ create table players (
     id int(10) PRIMARY KEY AUTO_INCREMENT,
     game_id int(10) not null,
     user_id int(10) not null,
-    order int(2) not null default 0,
+    player_order int(2) not null default 0,
+    status varchar(50) not null,
     coins int(2) not null default 0,
     points int(2) not null default 0,
     swords int(2) not null default 0,

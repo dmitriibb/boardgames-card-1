@@ -38,4 +38,6 @@ public class Game {
     @Column(name = "active_player_id")
     private int activePlayerId;
 
+    private String password;
+
 }

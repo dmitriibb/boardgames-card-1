@@ -27,9 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and().httpBasic()
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/")
-                .and()
-                .cors();
+                .and().logout().logoutUrl("/logout").logoutSuccessUrl("/");
 
     }
 

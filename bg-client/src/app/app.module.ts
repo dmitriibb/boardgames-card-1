@@ -6,18 +6,32 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import {FormsModule} from "@angular/forms";
+import {HttpClientModule} from "@angular/common/http";
+import { UserInfoShortComponent } from './components/user-info-short/user-info-short.component';
+import { GameInfoShortComponent } from './components/game-info-short/game-info-short.component';
+import { GameInfoComponent } from './components/game-info/game-info.component';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatIconModule} from "@angular/material/icon";
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    HomeComponent
+    HomeComponent,
+    UserInfoShortComponent,
+    GameInfoShortComponent,
+    GameInfoComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        HttpClientModule,
+        NgbModule,
+        BrowserAnimationsModule,
+        MatIconModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

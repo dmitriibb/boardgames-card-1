@@ -9,18 +9,14 @@ import java.util.Set;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class GameDTO {
-
-    @EqualsAndHashCode.Include
-    private int id;
-
-    private String name;
+public class GameInfoDTO extends GameInfoShortDTO{
 
     private PlayerShortDTO admin;
 
     private Set<PlayerShortDTO> players;
 
     private GameStatus status;
+
+    private boolean editable;
 
 }

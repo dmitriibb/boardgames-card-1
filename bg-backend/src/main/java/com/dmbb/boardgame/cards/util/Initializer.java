@@ -3,8 +3,7 @@ package com.dmbb.boardgame.cards.util;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.entity.User;
 import com.dmbb.boardgame.cards.model.enums.UserRoles;
-import com.dmbb.boardgame.cards.repository.CardDescriptionRepository;
-import com.dmbb.boardgame.cards.repository.UserRepository;
+import com.dmbb.boardgame.cards.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -22,9 +21,16 @@ public class Initializer {
     private final UserRepository userRepository;
     private final CardDescriptionRepository cardDescriptionRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CardRepository cardRepository;
+    private final GameRepository gameRepository;
+    private final PlayerRepository playerRepository;
 
     @PostConstruct
     public void init() {
+        cardRepository.deleteAll();
+        playerRepository.deleteAll();
+        gameRepository.deleteAll();
+
         initUsers();
         initCardDescriptions();
     }

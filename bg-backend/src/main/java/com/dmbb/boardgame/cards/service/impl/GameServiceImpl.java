@@ -1,7 +1,9 @@
 package com.dmbb.boardgame.cards.service.impl;
 
 import com.dmbb.boardgame.cards.exception.TmpException;
-import com.dmbb.boardgame.cards.model.dto.GameDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoShortDTO;
+import com.dmbb.boardgame.cards.model.dto.NewGameDTO;
 import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.Game;
@@ -17,6 +19,7 @@ import com.dmbb.boardgame.cards.service.GameService;
 import com.dmbb.boardgame.cards.service.PlayerService;
 import com.dmbb.boardgame.cards.util.MyUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,11 +39,12 @@ public class GameServiceImpl implements GameService {
     private final PlayerService playerService;
 
     @Override
-    public GameDTO createNewGame(User user, GameDTO newGameDTO) {
+    public GameInfoShortDTO createNewGame(User user, NewGameDTO gameDTO) {
         Game gameEntity = new Game();
         gameEntity.setAdmin(user);
-        gameEntity.setName(newGameDTO.getName());
+        gameEntity.setName(gameDTO.getName());
         gameEntity.setStatus(GameStatus.AWAITING);
+        gameEntity.setPassword(gameDTO.getPassword());
         Game savedGame = gameRepository.save(gameEntity);
 
         Player player = new Player();
@@ -50,7 +54,7 @@ public class GameServiceImpl implements GameService {
         player.setStatus(PlayerStatus.WAITING);
         playerRepository.save(player);
 
-        return gameEntityToDTO(savedGame);
+        return gameEntityToShortDTO(savedGame);
     }
 
     @Override
@@ -75,25 +79,33 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<GameDTO> getAllGames() {
+    public List<GameInfoShortDTO> getAllGamesShort(User user) {
         return gameRepository.findAll()
                 .stream()
-                .map(this::gameEntityToDTO)
+                .map(game -> gameEntityToShortDTO(game))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<GameDTO> getGamesByAdmin(User user) {
+    public GameInfoDTO getGameInfoById(User user, int id) {
+        Game game = gameRepository.findById(id)
+                .orElseThrow(() -> new TmpException("Game is not found"));
+
+        return gameEntityToDTO(game, user);
+    }
+
+    @Override
+    public List<GameInfoDTO> getGamesByAdmin(User user) {
         return gameRepository.findAllByAdmin(user)
                 .stream()
-                .map(this::gameEntityToDTO)
+                .map(game -> gameEntityToDTO(game, user))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void startGame(User admin, int gameId) {
         Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new TmpException("Game is nor found"));
+                .orElseThrow(() -> new TmpException("Game is not found"));
 
         validateGameBeforeStart(admin, game);
         game.setStatus(GameStatus.IN_PROCESS);
@@ -116,8 +128,16 @@ public class GameServiceImpl implements GameService {
         });
     }
 
-    private GameDTO gameEntityToDTO(Game entity) {
-        GameDTO dto = new GameDTO();
+    private GameInfoShortDTO gameEntityToShortDTO(Game entity) {
+        GameInfoShortDTO dto = new GameInfoShortDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setSecured(StringUtils.isNotEmpty(entity.getPassword()));
+        return dto;
+    }
+
+    private GameInfoDTO gameEntityToDTO(Game entity, User currentUser) {
+        GameInfoDTO dto = new GameInfoDTO();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setStatus(entity.getStatus());
@@ -126,6 +146,8 @@ public class GameServiceImpl implements GameService {
                 .stream()
                 .map(this::playerEntityToDTO)
                 .collect(Collectors.toSet()));
+
+        dto.setEditable(entity.getAdmin().equals(currentUser));
 
         return dto;
     }

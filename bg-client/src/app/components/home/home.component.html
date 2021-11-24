@@ -1,1 +1,55 @@
-<p>home works!</p>
+
+<div class="container">
+
+  <div class="row row-header">
+    <div class="col-4">
+      <p>home works!</p>
+    </div>
+    <div class="col-4">
+      some info
+    </div>
+    <div class="col-2">
+      <button value="logout" (click)="logout()">logout</button>
+    </div>
+    <div class="col-2">
+      <button type="button" data-bs-toggle="modal" data-bs-target="#createNewGameModal">
+        create new game
+      </button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-3 user-info-column">
+      <bg-user-info-short [user]="user"></bg-user-info-short>
+    </div>
+    <div class="col-6 games-list-column">
+      <div class="row row-cols-2">
+        <div *ngFor="let gameInfoShort of allGames" class="col">
+          <bg-game-info-short [gameInfoShort]="gameInfoShort" ></bg-game-info-short>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" tabindex="-1" id="createNewGameModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create new game</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" [(ngModel)]="gameName" placeholder="game name"> <br>
+          <input type="password" [(ngModel)]="password" placeholder="password">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="createGameClick()">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>

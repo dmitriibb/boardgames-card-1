@@ -1,0 +1,35 @@
+<p>game-info works!</p>
+<div class="container">
+  <div class="row">
+
+    <div class="col-4" id="gameInfoDiv">
+      <div class="row">
+        <div class="col">id: </div>
+        <div class="col">{{gameInfo.id}}</div>
+      </div>
+      <div class="row">
+        <div class="col">name: </div>
+        <div class="col">{{gameInfo.name}}</div>
+      </div>
+      <div class="row">
+        <div class="col">status: </div>
+        <div class="col">{{gameInfo.status}}</div>
+      </div>
+    </div>
+
+    <div class="col-6">
+      <div *ngFor="let player of gameInfo.players" class="playerRow">
+        <div class="row">
+          <div class="col">id: </div>
+          <div class="col">{{player.id}}</div>
+        </div>
+        <div class="row">
+          <div class="col">name: </div>
+          <div class="col">{{player.name}}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+

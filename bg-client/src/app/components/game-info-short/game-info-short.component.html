@@ -1,0 +1,19 @@
+<div class="game-info-short-card">
+  <div class="container">
+    <div class="row">
+      <div class="col"><img src="assets/game_info_placeholder.png" class="game-info-short-img"></div>
+    </div>
+    <div class="row">
+      <div class="col">name: </div>
+      <div class="col">{{gameInfo.name}}</div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <button  mat-button (click)="openGameInfo()">
+          <mat-icon *ngIf="secured">lock</mat-icon>
+          open
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

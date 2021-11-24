@@ -1,0 +1,9 @@
+.game-info-short-card {
+  margin: 4em;
+  border: black 2px solid;
+}
+
+.game-info-short-img {
+  max-width: 200px;
+  max-height: 200px;
+}

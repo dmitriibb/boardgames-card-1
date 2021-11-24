@@ -1,19 +1,23 @@
 package com.dmbb.boardgame.cards.service;
 
-import com.dmbb.boardgame.cards.model.dto.GameDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoDTO;
+import com.dmbb.boardgame.cards.model.dto.GameInfoShortDTO;
+import com.dmbb.boardgame.cards.model.dto.NewGameDTO;
 import com.dmbb.boardgame.cards.model.entity.User;
 
 import java.util.List;
 
 public interface GameService {
 
-    GameDTO createNewGame(User user, GameDTO newGameDTO);
+    GameInfoShortDTO createNewGame(User user, NewGameDTO gameDTO);
 
     void joinGame(User user, int gameId);
 
-    List<GameDTO> getAllGames();
+    List<GameInfoShortDTO> getAllGamesShort(User user);
 
-    List<GameDTO> getGamesByAdmin(User user);
+    GameInfoDTO getGameInfoById(User user, int id);
+
+    List<GameInfoDTO> getGamesByAdmin(User user);
 
     void startGame(User admin, int gameId);
 

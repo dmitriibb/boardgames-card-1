@@ -38,6 +38,7 @@ public class User implements UserDetails {
 
     public UserDTO toDTO() {
         UserDTO dto = new UserDTO();
+        dto.setId(id);
         dto.setEmail(email);
         dto.setName(name);
         return dto;
