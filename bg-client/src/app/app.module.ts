@@ -13,6 +13,7 @@ import { GameInfoComponent } from './components/game-info/game-info.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
+import { MyTestComponent } from './components/my-test/my-test.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {MatIconModule} from "@angular/material/icon";
     HomeComponent,
     UserInfoShortComponent,
     GameInfoShortComponent,
-    GameInfoComponent
+    GameInfoComponent,
+    MyTestComponent
   ],
     imports: [
         BrowserModule,

@@ -16,6 +16,10 @@ public class PlayerShortDTO {
 
     private String name;
 
+    private boolean main;
+
+    private boolean active;
+
     private int order;
 
     private int coins;
@@ -30,8 +34,6 @@ public class PlayerShortDTO {
 
     private int anchors;
 
-    private int cardNumber;
-
-    private List<CardDTO> cardsHand;
+    private List<CardDTO> cards;
 
 }

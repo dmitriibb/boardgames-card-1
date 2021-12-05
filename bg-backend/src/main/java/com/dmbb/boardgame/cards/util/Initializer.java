@@ -51,6 +51,18 @@ public class Initializer {
         roles.add(UserRoles.ADMIN);
         user.setRoles(roles);
         userRepository.save(user);
+
+        User user2 = new User();
+        user2.setEmail("dima2@test.com");
+        user2.setPassword(passwordEncoder.encode("qwerty2"));
+        user2.setName("dima2");
+        user2.setActive(true);
+
+        Set<UserRoles> roles2 = new HashSet<>();
+        roles2.add(UserRoles.USER);
+        roles2.add(UserRoles.ADMIN);
+        user2.setRoles(roles2);
+        userRepository.save(user2);
     }
 
     private void initCardDescriptions() {

@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -21,10 +21,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                //.and()
+                .authorizeRequests().antMatchers("/ws/**", "/home/**", "/user/registration").permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/home", "/user/registration").permitAll()
-                .and()
+                //.authorizeRequests().antMatchers("/ws/secured/**").authenticated()
+                //.and()
                 .authorizeRequests().anyRequest().authenticated()
                 .and().httpBasic()
                 .and().logout().logoutUrl("/logout").logoutSuccessUrl("/");

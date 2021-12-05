@@ -11,9 +11,11 @@ public interface CardService {
 
     List<CardDescription> getAll();
 
-    List<Card> createNewDeskForGame(Game game);
+    List<Card> createNewDeckForGame(Game game);
 
     void save(Card card);
+
+    int getCardInDeckNumber(Game game);
 
 
 }

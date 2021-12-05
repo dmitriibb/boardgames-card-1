@@ -3,7 +3,7 @@ export class GameInfoShort {
   name: string;
   secured: boolean;
 
-  fromJson(json: any) {
+  formObj(json: any) {
     Object.assign(this, json);
     return this;
   }

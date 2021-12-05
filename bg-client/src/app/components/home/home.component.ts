@@ -4,7 +4,8 @@ import {StateService} from "../../services/state.service";
 import {UserShortDTO} from "../../model/UserShortDTO";
 import {ApiService} from "../../services/api.service";
 import {GameInfoShort} from "../../model/GameInfoShort";
-import {MessageExchangeService} from "../../services/message-exchange.service";
+import {NotificationService} from "../../services/notification.service";
+import {WebSocketAPI} from "../../services/WebSocketAPI";
 
 @Component({
   selector: 'bg-home',
@@ -16,47 +17,53 @@ export class HomeComponent implements OnInit {
   user = new UserShortDTO();
 
   gameName = '';
-  password = ''
+  gamePassword = ''
 
   allGames: GameInfoShort[];
 
   constructor(private router: Router,
               private stateService: StateService,
               private api: ApiService,
-              private messageExchangeService: MessageExchangeService) {
+              private notificationService: NotificationService,
+              private webSocketAPI: WebSocketAPI) {
     this.allGames = [];
   }
 
   ngOnInit(): void {
-    const currentUSer = this.stateService.currentUser();
-    if (!currentUSer) {
+    const auth = this.stateService.auth();
+    if (!auth)
       this.router.navigateByUrl('/login');
-      return;
-    }
-    this.user = currentUSer;
+
+    this.api.login(auth).subscribe(res => {
+      this.user = new UserShortDTO().formObj(res);
+    }, error => {
+      console.error(error);
+      this.router.navigateByUrl('/login');
+    });
+
     this.loadAllGames();
   }
 
   logout() {
     this.stateService.logout();
     this.router.navigateByUrl('/login');
+    this.notificationService.logoutSubject.next();
   }
 
   createGameClick() {
     const body = {
       name: this.gameName,
-      password: this.password
+      password: this.gamePassword
     };
     this.api.createNewGame(body).subscribe(response => {
-      console.log(response);
       this.router.navigateByUrl('/game-info/' + response.id)
-    })
+    }, error => this.notificationService.errorHttpRequest(error));
   }
 
   private loadAllGames() {
     this.api.getAllGamesInfoShort().subscribe(responseGames => {
-      this.allGames = responseGames.map((gameInfo: any) => new GameInfoShort().fromJson(gameInfo));
-    }, error => this.messageExchangeService.sendErrorResponse(error));
+      this.allGames = responseGames.map((gameInfo: any) => new GameInfoShort().formObj(gameInfo));
+    }, error => this.notificationService.errorHttpRequest(error));
   }
 
 }

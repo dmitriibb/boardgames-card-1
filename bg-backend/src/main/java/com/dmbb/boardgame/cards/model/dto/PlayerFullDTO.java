@@ -10,7 +10,6 @@ import java.util.Collection;
 @Setter
 public class PlayerFullDTO extends PlayerShortDTO{
 
-    private Collection<CardDTO> cards;
-
+    //private Collection<CardDTO> cards;
 
 }

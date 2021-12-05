@@ -9,12 +9,16 @@ import java.util.List;
 @Setter
 public class GameUpdateDTO {
 
-    private PlayerFullDTO me;
+    private PlayerShortDTO me;
 
     private List<PlayerShortDTO> otherPlayers;
 
     private List<CardDTO> table;
 
     private int activePlayer;
+
+    private int mainPlayer;
+
+    private int cardsInDeck;
 
 }

@@ -9,7 +9,6 @@ import com.dmbb.boardgame.cards.repository.CardDescriptionRepository;
 import com.dmbb.boardgame.cards.repository.CardRepository;
 import com.dmbb.boardgame.cards.service.CardService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<Card> createNewDeskForGame(Game game) {
+    public List<Card> createNewDeckForGame(Game game) {
         List<Card> cards = new ArrayList<>();
 
         cardDescriptionRepository.findAll().forEach(cd -> {
@@ -37,19 +36,27 @@ public class CardServiceImpl implements CardService {
                 Card card = new Card();
                 card.setGame(game);
                 card.setCardDescriptionId(cd.getId());
-                card.setCoin(true);
-                card.setStatus(CardStatus.DESK);
+                card.setCoin(false);
+                card.setStatus(CardStatus.DECK);
                 cards.add(card);
             }
         });
+
         Collections.shuffle(cards);
+        setCardOrder(cards);
+
         cardRepository.saveAll(cards);
-        return cardRepository.findAllByGame(game);
+        return cardRepository.findAllByGameOrderByCardOrder(game);
     }
 
     @Override
     public void save(Card card) {
         cardRepository.save(card);
+    }
+
+    @Override
+    public int getCardInDeckNumber(Game game) {
+        return cardRepository.countByGameAndStatus(game, CardStatus.DECK);
     }
 
 
@@ -65,6 +72,12 @@ public class CardServiceImpl implements CardService {
         dto.setHouses(entity.getHouses());
         dto.setSwords(entity.getSwords());
         return dto;
+    }
+
+    private void setCardOrder(List<Card> cards) {
+        for (int i = 0; i < cards.size(); i++) {
+            cards.get(i).setCardOrder(i);
+        }
     }
 
 }

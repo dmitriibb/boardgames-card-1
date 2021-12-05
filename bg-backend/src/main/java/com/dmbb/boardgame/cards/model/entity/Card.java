@@ -36,6 +36,9 @@ public class Card {
     @Enumerated(EnumType.STRING)
     private CardStatus status;
 
+    @Column(name = "card_order")
+    private int cardOrder;
+
     public CardDTO toDTO() {
         CardDTO dto = new CardDTO();
         dto.setId(id);

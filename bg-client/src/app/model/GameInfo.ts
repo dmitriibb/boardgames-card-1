@@ -8,9 +8,10 @@ export class GameInfo {
   status: string;
   editable: boolean;
 
-  formJson(json: any) {
+  formObj(json: any) {
     Object.assign(this, json);
-    this.players = this.players.map(p => new PlayerShort().formJson(p));
+    this.admin = new PlayerShort().formObj(this.admin);
+    this.players = this.players.map(p => new PlayerShort().formObj(p));
     return this;
   }
 

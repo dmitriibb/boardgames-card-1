@@ -3,7 +3,7 @@ export class PlayerShort {
   id: number;
   name: string;
 
-  formJson(json: any) {
+  formObj(json: any) {
     Object.assign(this, json);
     return this;
   }

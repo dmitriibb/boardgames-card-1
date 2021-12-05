@@ -1,0 +1,49 @@
+<div id="main-content" class="container">
+
+  <div class="row">
+    <div class="col">
+      <input type="text" [(ngModel)]="auth">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <button (click)="connect()">Connect</button>
+    </div>
+    <div class="col">
+      <button (click)="disconnect()" disabled="disabled">Disconnect</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <input type="text" [(ngModel)]="name" class="form-control" name="name"> <br>
+    </div>
+    <div class="col-2">
+      <button (click)="sendMessage()">Send</button>
+    </div>
+    <div class="col-8">
+      <p> {{ helloResponse }}</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <input type="text" [(ngModel)]="newListeningTopic">
+    </div>
+    <div class="col-2">
+      <button (click)="subscribeForNewTopic()">subscribe</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col messages-list">
+      <div *ngFor="let message of messages" class="row">
+        <p [textContent]="message"></p>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</div>

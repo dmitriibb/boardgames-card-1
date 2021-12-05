@@ -35,6 +35,7 @@ create table games (
     name varchar(100) not null,
     admin_id int(10) not null,
     status varchar(50) not null,
+    main_player_id int(10) not null,
     active_player_id int(10) not null,
     password varchar(50),
     constraint games_admin_id_fk foreign key(admin_id) references users(id)
@@ -45,7 +46,6 @@ create table players (
     game_id int(10) not null,
     user_id int(10) not null,
     player_order int(2) not null default 0,
-    status varchar(50) not null,
     coins int(2) not null default 0,
     points int(2) not null default 0,
     swords int(2) not null default 0,
@@ -65,6 +65,7 @@ create table cards (
     card_description_id int(10) not null,
     coin boolean not null default true,
     status varchar(50) not null,
+    card_order int(3),
     constraint cards_game_id_fk foreign key(game_id) references games(id),
     constraint cards_player_id_fk foreign key(player_id) references players(id),
     index cards_game_id_indx (game_id),

@@ -35,6 +35,9 @@ public class Game {
     @Enumerated(EnumType.STRING)
     private GameStatus status;
 
+    @Column(name = "main_player_id")
+    private int mainPlayerId;
+
     @Column(name = "active_player_id")
     private int activePlayerId;
 

@@ -28,8 +28,6 @@ public class Player {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    private PlayerStatus status;
-
     @Column(name = "player_order")
     private int order;
 

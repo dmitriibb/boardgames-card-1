@@ -18,18 +18,21 @@ export class ApiService {
   }
 
   createNewGame(body: any): Observable<any> {
-    const headers = {"Authorization": this.stateService.auth()};
-    return this.http.post(BASE_URL + '/game/new', body, {headers: headers});
+    return this.http.post(BASE_URL + '/game/new', body, {headers: this.getBaseHeaders()});
   }
 
   getGameInfo(gameId: any): Observable<any> {
-    const headers = {"Authorization": this.stateService.auth()};
-    return this.http.get(BASE_URL + '/game/' + gameId, {headers: headers})
+    return this.http.get(BASE_URL + '/game/' + gameId, {headers: this.getBaseHeaders()})
   }
 
   getAllGamesInfoShort(): Observable<any> {
-    const headers = {"Authorization": this.stateService.auth()};
-    return this.http.get(BASE_URL + '/game/all', {headers: headers});
+    return this.http.get(BASE_URL + '/game/all', {headers: this.getBaseHeaders()});
+  }
+
+  private getBaseHeaders() {
+    return {
+      "Authorization": this.stateService.auth()
+    };
   }
 
 }

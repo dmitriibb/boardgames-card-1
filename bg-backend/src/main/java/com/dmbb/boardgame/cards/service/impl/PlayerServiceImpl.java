@@ -1,44 +1,45 @@
 package com.dmbb.boardgame.cards.service.impl;
 
+import com.dmbb.boardgame.cards.config.Constants;
 import com.dmbb.boardgame.cards.model.dto.*;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.Game;
 import com.dmbb.boardgame.cards.model.entity.Player;
 import com.dmbb.boardgame.cards.model.enums.CardStatus;
+import com.dmbb.boardgame.cards.service.MessageService;
 import com.dmbb.boardgame.cards.service.PlayerService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class PlayerServiceImpl implements PlayerService {
 
+    private final MessageService messageService;
+
     @Override
-    public void notifyPlayers(Game game) {
-        GameUpdateDTO gameDTO = new GameUpdateDTO();
-        gameDTO.setActivePlayer(game.getActivePlayerId());
-        gameDTO.setTable(game.getCards().stream()
-                .filter(card -> card.getStatus() == CardStatus.TABLE)
-                .map(Card::toDTO)
-                .collect(Collectors.toList()));
+    public void notifyPlayers(GameUpdateDTO gameUpdateDTO, Collection<Player> players) {
 
-        game.getPlayers()
-                .forEach(player -> notifyPlayer(player, gameDTO, game.getPlayers()));
+        Map<String, PlayerShortDTO> playersMap = new HashMap<>();
+        List<PlayerShortDTO> allPlayers = new ArrayList<>();
+
+        players.forEach(player -> {
+            PlayerShortDTO dto = playerEntityToDTO(player);
+            playersMap.put(player.getUser().getUsername(), dto);
+            allPlayers.add(dto);
+        });
+
+        playersMap.forEach((username, playerDTO) -> sendGameUpdateDTOToPlayer(gameUpdateDTO, allPlayers, playerDTO, username));
     }
 
-    private void notifyPlayer(Player player, GameUpdateDTO gameDTO, Set<Player> allPlayers) {
-        gameDTO.setMe(playerFullDTO(player));
-
-        gameDTO.setOtherPlayers(allPlayers.stream()
-                .filter(p -> !p.equals(player))
-                .map(p -> enrichPlayerShortDTO(new PlayerShortDTO(), p))
-                .collect(Collectors.toList()));
-    }
-
-    private PlayerShortDTO enrichPlayerShortDTO(PlayerShortDTO dto, Player player) {
+    @Override
+    public PlayerShortDTO playerEntityToDTO(Player player) {
+        PlayerShortDTO dto = new PlayerShortDTO();
         dto.setId(player.getId());
         dto.setName(player.getUser().getName());
         dto.setCoins(player.getCoins());
@@ -47,15 +48,26 @@ public class PlayerServiceImpl implements PlayerService {
         dto.setCrosses(player.getCrosses());
         dto.setHouses(player.getHouses());
         dto.setSwords(player.getSwords());
-        dto.setCardNumber(player.getCards().size());
+        dto.setCards(player.getCards()
+                .stream()
+                .filter(card -> card.getStatus() == CardStatus.PLAYER_TABLE)
+                .map(Card::toDTO)
+                .collect(Collectors.toList()));
         return dto;
     }
 
-    private PlayerFullDTO playerFullDTO(Player player) {
-        PlayerFullDTO dto = new PlayerFullDTO();
-        enrichPlayerShortDTO(dto, player);
-        dto.setCards(player.getCards().stream().map(Card::toDTO).collect(Collectors.toList()));
-        return dto;
+    private void sendGameUpdateDTOToPlayer(GameUpdateDTO gameUpdateDTO, List<PlayerShortDTO> allPlayers,
+                                           PlayerShortDTO playerShortDTO, String username) {
+        gameUpdateDTO.setMe(playerShortDTO);
+        gameUpdateDTO.setOtherPlayers(copyPlayersDTOListExclude(allPlayers, playerShortDTO));
+        messageService.sendMessageToUser(username, Constants.TOPIC_MESSAGES, gameUpdateDTO);
+    }
+
+    private List<PlayerShortDTO> copyPlayersDTOListExclude(List<PlayerShortDTO> list, PlayerShortDTO excludeDTO) {
+        return list.stream()
+                .filter(p -> p.getId() != excludeDTO.getId())
+                .sorted(Comparator.comparing(PlayerShortDTO::getId))
+                .collect(Collectors.toList());
     }
 
 
