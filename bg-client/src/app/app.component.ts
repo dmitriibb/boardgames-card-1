@@ -6,6 +6,7 @@ import {StateService} from "./services/state.service";
 import {ApiService} from "./services/api.service";
 import {WebSocketAPI} from "./services/WebSocketAPI";
 import {UserShortDTO} from "./model/UserShortDTO";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -31,27 +32,33 @@ export class AppComponent implements OnInit{
               private stateService: StateService,
               private api: ApiService,
               private notificationService: NotificationService,
-              private webSocketAPI: WebSocketAPI) {
+              private webSocketAPI: WebSocketAPI,
+              private router: Router) {
   }
 
   ngOnInit(): void {
     this.messageExchangeService.subscribeForErrors().subscribe(error => {
       this.errorMessage = error;
       this.modalService.open(this.errorMessageModal);
-    })
+    });
 
     this.messageExchangeService.subscribeForMessagesFromServer().subscribe(message => {
       this.serverMessageType = message.messageType;
       this.serverMessage = JSON.stringify(message.payload);
       this.modalService.open(this.infoMessageModal);
-    })
+    });
 
     const auth = this.stateService.auth();
-    if (auth) {
-      this.api.login(auth).subscribe(res => {
-        this.webSocketAPI._connect();
-      });
-    }
+    if (!auth)
+      this.router.navigateByUrl('/login');
+
+    this.api.login(auth).subscribe(res => {
+      this.webSocketAPI._connect();
+      this.router.navigateByUrl('/home');
+    }, error => {
+      console.error(error);
+      this.router.navigateByUrl('/login');
+    });
   }
 
 }

@@ -6,10 +6,11 @@ import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.entity.Game;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CardService {
 
-    List<CardDescription> getAll();
+    List<CardDescriptionDTO> getCardDescriptions();
 
     List<Card> createNewDeckForGame(Game game);
 

@@ -22,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -35,6 +37,7 @@ public class GameInfoServiceImpl implements GameInfoService {
     private final PlayerRepository playerRepository;
 
     @Override
+    @Transactional
     public GameInfoShortDTO createNewGame(User user, NewGameDTO gameDTO) {
         Game gameEntity = new Game();
         gameEntity.setAdmin(user);
@@ -46,11 +49,15 @@ public class GameInfoServiceImpl implements GameInfoService {
         Player player = new Player();
         player.setGame(savedGame);
         player.setUser(user);
+        playerRepository.save(player);
+
+        savedGame = gameRepository.getById(savedGame.getId());
 
         return gameEntityToShortDTO(savedGame);
     }
 
     @Override
+    @Transactional
     public void joinGame(User user, int gameId) {
         Game game = gameRepository.findById(gameId)
                 .orElseThrow(() -> new TmpException("Game is nor found"));

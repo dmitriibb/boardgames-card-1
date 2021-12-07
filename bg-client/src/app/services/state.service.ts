@@ -6,25 +6,25 @@ import {AUTHORIZATION_VALUE, STORAGE_USER} from "../core/constants";
 })
 export class StateService {
 
+  private _auth = 'Basic ZGltYUB0ZXN0LmNvbTpxd2VydHk=';
+
   constructor() {}
 
-  login(user: any, auth: string) {
-    localStorage.setItem(STORAGE_USER, JSON.stringify(user));
-    localStorage.setItem(AUTHORIZATION_VALUE, auth);
+  saveAuth(auth: string) {
+    //localStorage.setItem(STORAGE_USER, JSON.stringify(user));
+    //localStorage.setItem(AUTHORIZATION_VALUE, auth);
+    this._auth = auth;
   }
 
   logout() {
-    localStorage.removeItem(STORAGE_USER);
-    localStorage.removeItem(AUTHORIZATION_VALUE);
-  }
-
-  currentUser() {
-    const userJson = localStorage.getItem(STORAGE_USER);
-    return userJson ? JSON.parse(userJson) : null;
+    //localStorage.removeItem(STORAGE_USER);
+    //localStorage.removeItem(AUTHORIZATION_VALUE);
+    this._auth = '';
   }
 
   auth(): string {
-    return localStorage.getItem(AUTHORIZATION_VALUE) || '';
+    //return localStorage.getItem(AUTHORIZATION_VALUE) || '';
+    return this._auth;
   }
 
 }

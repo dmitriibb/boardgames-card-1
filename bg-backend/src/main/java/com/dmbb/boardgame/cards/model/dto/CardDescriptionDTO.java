@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 public class CardDescriptionDTO {
 
+    private int id;
+
     private String name;
 
     private CardType type;

@@ -1,5 +1,6 @@
 package com.dmbb.boardgame.cards.model.entity;
 
+import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
 import com.dmbb.boardgame.cards.model.enums.CardColor;
 import com.dmbb.boardgame.cards.model.enums.CardType;
 import lombok.Getter;
@@ -36,5 +37,20 @@ public class CardDescription {
     private int swords;
 
     private int amount;
+
+    public CardDescriptionDTO toDTO() {
+        CardDescriptionDTO dto = new CardDescriptionDTO();
+        dto.setId(id);
+        dto.setName(name);
+        dto.setType(type);
+        dto.setPoints(points);
+        dto.setCoins(coins);
+        dto.setColor(color);
+        dto.setHouses(houses);
+        dto.setCrosses(crosses);
+        dto.setAnchors(anchors);
+        dto.setSwords(swords);
+        return dto;
+    }
 
 }

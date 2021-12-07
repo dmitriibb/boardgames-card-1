@@ -1,5 +1,6 @@
 package com.dmbb.boardgame.cards.util;
 
+import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,13 @@ public class MyUtils {
 
     public static Queue<Card> cardListToQueue(List<Card> cards) {
         return new LinkedList<>(cards);
+    }
+
+    public static List<PlayerShortDTO> copyPlayersDTOListExclude(List<PlayerShortDTO> list, int playerExcludeId) {
+        return list.stream()
+                .filter(p -> p.getId() != playerExcludeId)
+                .sorted(Comparator.comparing(PlayerShortDTO::getOrder))
+                .collect(Collectors.toList());
     }
 
 }

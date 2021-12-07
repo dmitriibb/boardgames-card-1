@@ -1,5 +1,6 @@
 package com.dmbb.boardgame.cards.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,5 +36,8 @@ public class PlayerShortDTO {
     private int anchors;
 
     private List<CardDTO> cards;
+
+    @JsonIgnore
+    private String username;
 
 }

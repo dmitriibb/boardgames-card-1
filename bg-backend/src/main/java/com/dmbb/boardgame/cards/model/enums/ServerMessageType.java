@@ -1,5 +1,5 @@
 package com.dmbb.boardgame.cards.model.enums;
 
-public enum MessageType {
+public enum ServerMessageType {
     GAME_UPDATE, GAME_START
 }

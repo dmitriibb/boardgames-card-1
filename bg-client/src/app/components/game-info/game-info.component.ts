@@ -15,16 +15,24 @@ export class GameInfoComponent implements OnInit {
 
   constructor(private api: ApiService,
               private router: Router,
-              private messageExchangeService: NotificationService) {
+              private notificationService: NotificationService) {
     this.gameInfo = new GameInfo();
   }
 
   ngOnInit(): void {
-    const gameId = this.router.url.substr(this.router.url.lastIndexOf('/') + 1);
-    this.api.getGameInfo(gameId)
-      .subscribe(response => {
-        this.gameInfo = new GameInfo().formObj(response);
-      }, error => this.messageExchangeService.errorHttpRequest(error));
+    this.getGameInfo();
   }
 
+  joinGame() {
+    const gameId = this.router.url.substr(this.router.url.lastIndexOf('/') + 1);
+    this.api.joinGame(gameId).subscribe(res => this.getGameInfo(),
+        error => this.notificationService.errorHttpRequest(error));
+  }
+
+  private getGameInfo() {
+    const gameId = this.router.url.substr(this.router.url.lastIndexOf('/') + 1);
+    this.api.getGameInfo(gameId)
+      .subscribe(response => this.gameInfo = new GameInfo().formObj(response),
+          error => this.notificationService.errorHttpRequest(error));
+  }
 }

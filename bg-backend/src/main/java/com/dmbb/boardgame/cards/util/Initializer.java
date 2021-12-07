@@ -1,9 +1,14 @@
 package com.dmbb.boardgame.cards.util;
 
+import com.dmbb.boardgame.cards.model.dto.GameInfoShortDTO;
+import com.dmbb.boardgame.cards.model.dto.NewGameDTO;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
+import com.dmbb.boardgame.cards.model.entity.Game;
 import com.dmbb.boardgame.cards.model.entity.User;
 import com.dmbb.boardgame.cards.model.enums.UserRoles;
 import com.dmbb.boardgame.cards.repository.*;
+import com.dmbb.boardgame.cards.service.GameInfoService;
+import com.dmbb.boardgame.cards.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -24,6 +29,8 @@ public class Initializer {
     private final CardRepository cardRepository;
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
+    private final GameInfoService gameInfoService;
+    private final GameService gameService;
 
     @PostConstruct
     public void init() {
@@ -33,12 +40,12 @@ public class Initializer {
 
         initUsers();
         initCardDescriptions();
+        initGames();
     }
 
     private void initUsers() {
         userRepository.deleteAll();
         userRepository.flush();
-
 
         User user = new User();
         user.setEmail("dima@test.com");
@@ -79,6 +86,21 @@ public class Initializer {
 
         List<CardDescription> taxes = MyUtils.getObjectsFromCsvFile("data/taxes.csv", CardDescription.class);
         cardDescriptionRepository.saveAll(taxes);
+    }
+
+    private void initGames() {
+        gameRepository.deleteAll();
+        gameRepository.flush();
+
+        User admin = userRepository.getByEmail("dima@test.com");
+        NewGameDTO newGameDTO = new NewGameDTO();
+        newGameDTO.setName("test game 1");
+        GameInfoShortDTO gameInfoShortDTO = gameInfoService.createNewGame(admin, newGameDTO);
+
+        User user2 = userRepository.getByEmail("dima2@test.com");
+        gameInfoService.joinGame(user2, gameInfoShortDTO.getId());
+
+        gameService.startGame(admin, gameInfoShortDTO.getId());
     }
 
 }

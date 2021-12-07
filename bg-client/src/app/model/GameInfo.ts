@@ -1,17 +1,17 @@
-import {PlayerShort} from "./PlayerShort";
+import {PlayerInfo} from "./PlayerInfo";
 
 export class GameInfo {
   id: number;
   name: string;
-  admin: PlayerShort;
-  players: PlayerShort[];
+  admin: PlayerInfo;
+  players: PlayerInfo[];
   status: string;
   editable: boolean;
 
-  formObj(json: any) {
-    Object.assign(this, json);
-    this.admin = new PlayerShort().formObj(this.admin);
-    this.players = this.players.map(p => new PlayerShort().formObj(p));
+  formObj(obj: any) {
+    Object.assign(this, obj);
+    this.admin = new PlayerInfo().formObj(this.admin);
+    this.players = this.players.map(p => new PlayerInfo().formObj(p));
     return this;
   }
 

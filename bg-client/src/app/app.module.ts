@@ -14,6 +14,10 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatIconModule} from "@angular/material/icon";
 import { MyTestComponent } from './components/my-test/my-test.component';
+import { GameComponent } from './components/game/game.component';
+import { GameTableComponent } from './components/game-table/game-table.component';
+import { CardComponent } from './components/card/card.component';
+import { GamePlayerComponent } from './components/game-player/game-player.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +27,11 @@ import { MyTestComponent } from './components/my-test/my-test.component';
     UserInfoShortComponent,
     GameInfoShortComponent,
     GameInfoComponent,
-    MyTestComponent
+    MyTestComponent,
+    GameComponent,
+    GameTableComponent,
+    CardComponent,
+    GamePlayerComponent
   ],
     imports: [
         BrowserModule,

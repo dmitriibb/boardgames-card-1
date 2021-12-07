@@ -3,8 +3,8 @@ export class UserShortDTO {
  name: string;
  email: string;
 
-  formObj(json: any) {
-    Object.assign(this, json);
+  formObj(obj: any) {
+    Object.assign(this, obj);
     return this;
   }
 

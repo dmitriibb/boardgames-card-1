@@ -1,0 +1,8 @@
+.deck {
+  border: #d56c0e solid 2px;
+  width: 100px;
+  height: 200px;
+}
+.players-grid {
+  border: #4facff solid 1px;
+}

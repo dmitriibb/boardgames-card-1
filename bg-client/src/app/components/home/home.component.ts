@@ -31,8 +31,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     const auth = this.stateService.auth();
-    if (!auth)
-      this.router.navigateByUrl('/login');
 
     this.api.login(auth).subscribe(res => {
       this.user = new UserShortDTO().formObj(res);

@@ -1,0 +1,28 @@
+<div class="container"
+     [ngClass]="{'player-active-border': player.active,
+     'player-main-border': player.main && !player.active,
+     'player-waiting-border': !player.main && !player.active}">
+  <div class="row">
+    <div class="col-6 player-info">
+      <div class="row row-cols-2">
+        <div class="col"><p>name:{{player.name}}</p></div>
+        <div class="col"><p>main:{{player.main}}</p></div>
+        <div class="col"><p>active:{{player.active}}</p></div>
+        <div class="col"><p></p>coins:{{player.coins}}</div>
+        <div class="col"><p></p>points:{{player.points}}</div>
+        <div class="col"><p></p>swords:{{player.swords}}</div>
+        <div class="col"><p></p>crosses:{{player.crosses}}</div>
+        <div class="col"><p></p>houses:{{player.houses}}</div>
+        <div class="col"><p></p>anchors:{{player.anchors}}</div>
+      </div>
+
+    </div>
+    <div class="col-6 player-cards">
+      <div class="row row-cols-4">
+        <div class="col" *ngFor="let card of player.cards">
+          <bg-card [card]="card" ></bg-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

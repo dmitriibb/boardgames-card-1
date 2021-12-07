@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
   loginClick() {
     const auth = 'Basic ' + Base64.encode(this.login + ":" + this.password);
     this.apiService.login(auth).subscribe((user) => {
-      this.stateService.login(user, auth);
+      this.stateService.saveAuth(auth);
       this.router.navigateByUrl('/home');
       this.webSocketAPI._connect();
     }, error => {

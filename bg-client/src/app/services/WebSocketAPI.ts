@@ -4,6 +4,7 @@ import {MyTestComponent} from "../components/my-test/my-test.component";
 import {NotificationService} from "./notification.service";
 import {StateService} from "./state.service";
 import {Injectable} from "@angular/core";
+import {CLIENT_MESSAGE_TYPE_ASK_FOR_ACTIVE_GAME_UPDATE} from "../core/constants";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,8 @@ import {Injectable} from "@angular/core";
 export class WebSocketAPI {
 
   webSocketEndPoint: string = 'http://localhost:8080/ws';
-  topicMessage: string = '/secured/user/queue/messages';
+  destinationToRead: string = '/secured/user/queue/messages'
+  destinationToSend: string = '/app/user/message';
   notificationService: NotificationService;
   stateService: StateService;
   stompClient: any;
@@ -39,10 +41,12 @@ export class WebSocketAPI {
 
       console.log(_this.sessionId)
 
-      _this.stompClient.subscribe(_this.topicMessage + '-user' + _this.sessionId, function (sdkEvent) {
+      _this.stompClient.subscribe(_this.destinationToRead + '-user' + _this.sessionId, function (sdkEvent) {
         console.log(sdkEvent);
         _this.notificationService.messageFromServer(JSON.parse(sdkEvent.body));
       });
+
+      _this.send({type: CLIENT_MESSAGE_TYPE_ASK_FOR_ACTIVE_GAME_UPDATE})
 
     }, this.errorCallBack);
   };
@@ -57,7 +61,8 @@ export class WebSocketAPI {
 
   // on error, schedule a reconnection attempt
   errorCallBack(error) {
-    console.log("errorCallBack -> " + error)
+    console.error(error);
+    this.notificationService.errorMessage(error);
     setTimeout(() => {
       this._connect();
     }, 5000);
@@ -67,18 +72,18 @@ export class WebSocketAPI {
    * Send message to sever via web socket
    * @param {*} message
    */
-  _send(message) {
-    console.log("calling logout api via web socket");
-    const body = "message from client: " + message;
+  send(message) {
 
     const headers = {
       'Authorization': this.stateService.auth()
     }
 
-    this.stompClient.send("/app/hello", {}, body);
+    const body = {
+      type: message.type,
+      payload: (message.payload === undefined || message.payload === null) ? null : JSON.stringify(message.payload)
+    }
 
-    this.stompClient.send("/app/secured/test", {}, body);
-
+    this.stompClient.send(this.destinationToSend, headers, JSON.stringify(body));
   }
 
 }

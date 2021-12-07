@@ -1,5 +1,6 @@
 package com.dmbb.boardgame.cards.service.impl;
 
+import com.dmbb.boardgame.cards.exception.BGNotAuthorizedException;
 import com.dmbb.boardgame.cards.exception.TmpException;
 import com.dmbb.boardgame.cards.model.dto.UserDTO;
 import com.dmbb.boardgame.cards.model.entity.User;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import javax.jws.soap.SOAPBinding;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,7 +39,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO register(UserDTO dto) {
         validateUserDTO(dto);
 
-        User user = userRepository.findByEmail(dto.getEmail());
+        User user = userRepository.getByEmail(dto.getEmail());
         if (user != null)
             throw new TmpException("This email is occupied");
 
@@ -67,30 +69,53 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return userRepository.findByEmail(s);
+        return getByEmail(s);
     }
 
     @Override
     public UsernamePasswordAuthenticationToken getUserForWebSocketAuth(String base64AuthHeader) throws AuthenticationException {
-        byte[] decodedBytes = Base64.getDecoder().decode(base64AuthHeader.split(" ")[1]);
-        String decodedString = new String(decodedBytes);
-        String[] usernameAndPassword = decodedString.split(":");
-        String username = usernameAndPassword[0];
-        String password =  usernameAndPassword[1];
 
-        UserDetails userDetails = loadUserByUsername(username);
-        if (userDetails == null)
-            throw new AuthenticationCredentialsNotFoundException("There is no user with email: " + username);
-
-        if (!passwordEncoder.matches(password, userDetails.getPassword()))
-            throw new AuthenticationCredentialsNotFoundException("Wrong password");
+        User user = getUserFromBaseAuth(base64AuthHeader);
 
         // null credentials, we do not pass the password along
         return new UsernamePasswordAuthenticationToken(
-                username,
+                user.getUsername(),
                 null,
                 Collections.singleton((GrantedAuthority) () -> "USER") // MUST provide at least one role
         );
+    }
+
+    @Override
+    public User getUserFromBaseAuth(String base64AuthHeader) {
+        if (StringUtils.isEmpty(base64AuthHeader))
+            throw new BGNotAuthorizedException("Authorization header is empty");
+
+        byte[] decodedBytes = Base64.getDecoder().decode(base64AuthHeader.split(" ")[1]);
+        String decodedString = new String(decodedBytes);
+        String[] usernameAndPassword = decodedString.split(":");
+
+        if (usernameAndPassword.length != 2)
+            throw new BGNotAuthorizedException("Missing username or password");
+
+        String username = usernameAndPassword[0];
+        String password =  usernameAndPassword[1];
+
+        User user = getByEmail(username);
+
+        if (!passwordEncoder.matches(password, user.getPassword()))
+            throw new AuthenticationCredentialsNotFoundException("Wrong password");
+
+        return user;
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return getByEmail(username);
+    }
+
+    private User getByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new BGNotAuthorizedException("User is not found for email: " + email));
     }
 
 }

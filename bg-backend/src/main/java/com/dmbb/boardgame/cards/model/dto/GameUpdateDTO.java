@@ -15,9 +15,9 @@ public class GameUpdateDTO {
 
     private List<CardDTO> table;
 
-    private int activePlayer;
+    private int activePlayerId;
 
-    private int mainPlayer;
+    private int mainPlayerId;
 
     private int cardsInDeck;
 

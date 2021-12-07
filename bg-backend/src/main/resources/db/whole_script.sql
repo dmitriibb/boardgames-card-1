@@ -61,7 +61,7 @@ create table players (
 create table cards (
     id int(10) PRIMARY KEY AUTO_INCREMENT,
     game_id int(10) not null,
-    player_id int(10) not null,
+    player_id int(10),
     card_description_id int(10) not null,
     coin boolean not null default true,
     status varchar(50) not null,

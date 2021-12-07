@@ -29,6 +29,14 @@ export class ApiService {
     return this.http.get(BASE_URL + '/game/all', {headers: this.getBaseHeaders()});
   }
 
+  joinGame(gameId) {
+    return this.http.put(BASE_URL + '/game/join/' + gameId, {headers: this.getBaseHeaders()});
+  }
+
+  getCardDescriptions(): Observable<any> {
+    return this.http.get(BASE_URL + '/card/descriptions', {headers: this.getBaseHeaders()});
+  }
+
   private getBaseHeaders() {
     return {
       "Authorization": this.stateService.auth()

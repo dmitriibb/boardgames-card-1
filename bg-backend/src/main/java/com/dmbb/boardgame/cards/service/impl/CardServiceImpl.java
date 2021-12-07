@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +26,11 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
 
     @Override
-    public List<CardDescription> getAll() {
-        return cardDescriptionRepository.findAll();
+    public List<CardDescriptionDTO> getCardDescriptions() {
+        return cardDescriptionRepository.findAll()
+                .stream()
+                .map(CardDescription::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -57,21 +63,6 @@ public class CardServiceImpl implements CardService {
     @Override
     public int getCardInDeckNumber(Game game) {
         return cardRepository.countByGameAndStatus(game, CardStatus.DECK);
-    }
-
-
-    private CardDescriptionDTO entityToDTO(CardDescription entity) {
-        CardDescriptionDTO dto = new CardDescriptionDTO();
-        dto.setType(entity.getType());
-        dto.setName(entity.getName());
-        dto.setCoins(entity.getCoins());
-        dto.setPoints(entity.getPoints());
-        dto.setColor(entity.getColor());
-        dto.setAnchors(entity.getAnchors());
-        dto.setCrosses(entity.getCrosses());
-        dto.setHouses(entity.getHouses());
-        dto.setSwords(entity.getSwords());
-        return dto;
     }
 
     private void setCardOrder(List<Card> cards) {

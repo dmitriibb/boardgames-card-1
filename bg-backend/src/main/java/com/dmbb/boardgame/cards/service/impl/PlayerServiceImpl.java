@@ -5,11 +5,15 @@ import com.dmbb.boardgame.cards.model.dto.*;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.Game;
 import com.dmbb.boardgame.cards.model.entity.Player;
+import com.dmbb.boardgame.cards.model.entity.User;
 import com.dmbb.boardgame.cards.model.enums.CardStatus;
-import com.dmbb.boardgame.cards.service.MessageService;
+import com.dmbb.boardgame.cards.model.enums.ServerMessageType;
+import com.dmbb.boardgame.cards.repository.PlayerRepository;
 import com.dmbb.boardgame.cards.service.PlayerService;
+import com.dmbb.boardgame.cards.util.MyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,54 +24,45 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PlayerServiceImpl implements PlayerService {
 
-    private final MessageService messageService;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final PlayerRepository playerRepository;
 
     @Override
-    public void notifyPlayers(GameUpdateDTO gameUpdateDTO, Collection<Player> players) {
+    public void notifyPlayers(GameUpdateDTO gameUpdateDTO) {
+        List<PlayerShortDTO> allPlayers = gameUpdateDTO.getOtherPlayers();
 
-        Map<String, PlayerShortDTO> playersMap = new HashMap<>();
-        List<PlayerShortDTO> allPlayers = new ArrayList<>();
-
-        players.forEach(player -> {
-            PlayerShortDTO dto = playerEntityToDTO(player);
-            playersMap.put(player.getUser().getUsername(), dto);
-            allPlayers.add(dto);
+        allPlayers.forEach(player -> {
+            String username = player.getUsername();
+            List<PlayerShortDTO> otherPlayers = MyUtils.copyPlayersDTOListExclude(allPlayers, player.getId());
+            gameUpdateDTO.setMe(player);
+            gameUpdateDTO.setOtherPlayers(otherPlayers);
+            sendGameUpdateDTOToPlayer(username, gameUpdateDTO);
         });
+    }
 
-        playersMap.forEach((username, playerDTO) -> sendGameUpdateDTOToPlayer(gameUpdateDTO, allPlayers, playerDTO, username));
+    private void sendGameUpdateDTOToPlayer(String username, GameUpdateDTO gameUpdateDTO) {
+        ServerMessageDTO messageDTO = new ServerMessageDTO(ServerMessageType.GAME_UPDATE, gameUpdateDTO);
+        sendMessageToUser(username, Constants.TOPIC_MESSAGES, messageDTO);
     }
 
     @Override
-    public PlayerShortDTO playerEntityToDTO(Player player) {
-        PlayerShortDTO dto = new PlayerShortDTO();
-        dto.setId(player.getId());
-        dto.setName(player.getUser().getName());
-        dto.setCoins(player.getCoins());
-        dto.setPoints(player.getPoints());
-        dto.setAnchors(player.getAnchors());
-        dto.setCrosses(player.getCrosses());
-        dto.setHouses(player.getHouses());
-        dto.setSwords(player.getSwords());
-        dto.setCards(player.getCards()
-                .stream()
-                .filter(card -> card.getStatus() == CardStatus.PLAYER_TABLE)
-                .map(Card::toDTO)
-                .collect(Collectors.toList()));
-        return dto;
+    public void sendMessageToUser(String username, String destination, Object payload) {
+        try {
+            messagingTemplate.convertAndSendToUser(username, destination, payload);
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+        }
     }
 
-    private void sendGameUpdateDTOToPlayer(GameUpdateDTO gameUpdateDTO, List<PlayerShortDTO> allPlayers,
-                                           PlayerShortDTO playerShortDTO, String username) {
-        gameUpdateDTO.setMe(playerShortDTO);
-        gameUpdateDTO.setOtherPlayers(copyPlayersDTOListExclude(allPlayers, playerShortDTO));
-        messageService.sendMessageToUser(username, Constants.TOPIC_MESSAGES, gameUpdateDTO);
+    @Override
+    public Player getPlayerById(int id) {
+        return playerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Player is not found for id: " + id));
     }
 
-    private List<PlayerShortDTO> copyPlayersDTOListExclude(List<PlayerShortDTO> list, PlayerShortDTO excludeDTO) {
-        return list.stream()
-                .filter(p -> p.getId() != excludeDTO.getId())
-                .sorted(Comparator.comparing(PlayerShortDTO::getId))
-                .collect(Collectors.toList());
+    @Override
+    public String getUsernameByPlayerId(int playerId) {
+        return playerRepository.getUsernameByPlayerId(playerId);
     }
 
 

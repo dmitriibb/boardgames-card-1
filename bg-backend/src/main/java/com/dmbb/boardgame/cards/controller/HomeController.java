@@ -2,12 +2,13 @@ package com.dmbb.boardgame.cards.controller;
 
 import com.dmbb.boardgame.cards.config.Constants;
 import com.dmbb.boardgame.cards.model.dto.GameUpdateDTO;
-import com.dmbb.boardgame.cards.model.dto.MessageDTO;
+import com.dmbb.boardgame.cards.model.dto.ServerMessageDTO;
 import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
-import com.dmbb.boardgame.cards.model.enums.MessageType;
+import com.dmbb.boardgame.cards.model.enums.ServerMessageType;
 import com.dmbb.boardgame.cards.service.GameService;
-import com.dmbb.boardgame.cards.service.MessageService;
+import com.dmbb.boardgame.cards.service.MessageReceiverService;
+import com.dmbb.boardgame.cards.service.PlayerService;
 import com.dmbb.boardgame.cards.util.MyUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
 
-    private final MessageService messageService;
+    private final PlayerService playerService;
+    private final GameService gameService;
 
     @GetMapping
     public String test() {
@@ -45,25 +47,8 @@ public class HomeController {
         return MyUtils.getObjectsFromCsvFile(filePath, CardDescription.class);
     }
 
-    @PutMapping("/message/{player}")
-    public void sendMessage(@RequestBody String message, @PathVariable String player) {
-        messageService.sendMessageToUser(player, message);
-    }
-
-    @PutMapping("/message/game/{player}")
-    public void sendGameUpdateMessage(@PathVariable String player) {
-
-        GameUpdateDTO dto = new GameUpdateDTO();
-        dto.setTable(new ArrayList<>());
-        dto.setMainPlayer(1);
-        dto.setActivePlayer(2);
-        dto.setMe(new PlayerShortDTO());
-        dto.setCardsInDeck(21);
-
-        MessageDTO messageDTO = new MessageDTO();
-        messageDTO.setMessageType(MessageType.GAME_UPDATE);
-        messageDTO.setPayload(dto);
-
-        messageService.sendMessageToUser(player, Constants.TOPIC_MESSAGES, messageDTO);
+    @PutMapping("/game-update/{gameId}")
+    public void sendGameUpdate(@PathVariable int gameId) {
+        gameService.sendGameUpdateForAllPlayers(gameId);
     }
 }
