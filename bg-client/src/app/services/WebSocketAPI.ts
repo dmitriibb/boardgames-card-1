@@ -22,7 +22,6 @@ export class WebSocketAPI {
   constructor(notificationService: NotificationService, stateService: StateService){
     this.notificationService = notificationService;
     this.stateService = stateService;
-    this.notificationService.logoutSubject.subscribe(() => this._disconnect());
   }
 
   _connect() {
@@ -77,6 +76,10 @@ export class WebSocketAPI {
     const headers = {
       'Authorization': this.stateService.auth()
     }
+
+    const currentGameId = this.stateService.gameId();
+    if (currentGameId)
+      headers['gameId'] = currentGameId;
 
     const body = {
       type: message.type,

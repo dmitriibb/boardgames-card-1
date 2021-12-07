@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -20,14 +22,14 @@ public class MessageReceiverServiceImpl implements MessageReceiverService {
     private final UserService userService;
 
     @Override
-    public void messageFromUser(ClientMessageDTO messageDTO, String auth, String username) {
+    @Transactional
+    public void messageFromUser(ClientMessageDTO messageDTO, String auth, String username, Integer gameId) {
         log.info("message from: " + username);
         //User user = userService.getUserFromBaseAuth(auth);
         User user = userService.getUserByUsername(username);
 
         switch (messageDTO.getType()) {
             case DRAW_CARD_FROM_DECK:
-                int gameId = Integer.parseInt(messageDTO.getPayload());
                 gameService.drawCardFromDeck(user, gameId);
                 break;
             case ASK_FOR_ACTIVE_GAME_UPDATE:

@@ -46,8 +46,7 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional
     public void startGame(User user, int gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new TmpException("Game is not found for id: " + gameId));
+        Game game = getGameById(gameId);
 
         validateGameBeforeStart(user, game);
 
@@ -62,8 +61,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void sendGameUpdateForAllPlayers(int gameId) {
-        Game game = gameRepository.findById(gameId)
-                .orElseThrow(() -> new TmpException("Game is not found for id: " + gameId));
+        Game game = getGameById(gameId);
         sendGameUpdateToPlayers(game);
     }
 
@@ -91,6 +89,11 @@ public class GameServiceImpl implements GameService {
     @Override
     public void drawCardFromDeck(User user, int gameId) {
         log.info(user.getName() + " is drawing card from deck for game id: " + gameId);
+        Game game = getGameById(gameId);
+        validateActivePlayer(user, game);
+        cardService.getCardFromDeck(game);
+        sendGameUpdateToPlayers(game);
+
     }
 
     private void sendGameUpdateToPlayers(Game game) {
@@ -102,10 +105,11 @@ public class GameServiceImpl implements GameService {
         int mainPlayerId = game.getMainPlayerId();
         int activePlayerId = game.getActivePlayerId();
         GameUpdateDTO gameDTO = new GameUpdateDTO();
+        gameDTO.setId(game.getId());
         gameDTO.setMainPlayerId(mainPlayerId);
         gameDTO.setActivePlayerId(activePlayerId);
-        gameDTO.setTable(game.getCards().stream()
-                .filter(card -> card.getStatus() == CardStatus.TABLE)
+        gameDTO.setTable(cardService.getCardGameTable(game)
+                .stream()
                 .map(Card::toDTO)
                 .collect(Collectors.toList()));
         gameDTO.setCardsInDeck(cardService.getCardInDeckNumber(game));
@@ -168,6 +172,11 @@ public class GameServiceImpl implements GameService {
 
         if (!player.getUser().equals(user))
             throw new RuntimeException("You are not the active player");
+    }
+
+    private Game getGameById(int gameId) {
+        return gameRepository.findById(gameId)
+                .orElseThrow(() -> new TmpException("Game is not found for id: " + gameId));
     }
 
 }

@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {NotificationService} from "./services/notification.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {TestWebSocketAPI} from "./services/testWebSocketAPI";
@@ -7,13 +7,14 @@ import {ApiService} from "./services/api.service";
 import {WebSocketAPI} from "./services/WebSocketAPI";
 import {UserShortDTO} from "./model/UserShortDTO";
 import {Router} from "@angular/router";
+import {UserService} from "./services/user.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit, OnDestroy{
 
   title = 'bg-client';
   errorMessage = '';
@@ -33,7 +34,8 @@ export class AppComponent implements OnInit{
               private api: ApiService,
               private notificationService: NotificationService,
               private webSocketAPI: WebSocketAPI,
-              private router: Router) {
+              private router: Router,
+              private userService: UserService) {
   }
 
   ngOnInit(): void {
@@ -48,17 +50,11 @@ export class AppComponent implements OnInit{
       this.modalService.open(this.infoMessageModal);
     });
 
-    const auth = this.stateService.auth();
-    if (!auth)
-      this.router.navigateByUrl('/login');
+    this.userService.authorize();
+  }
 
-    this.api.login(auth).subscribe(res => {
-      this.webSocketAPI._connect();
-      this.router.navigateByUrl('/home');
-    }, error => {
-      console.error(error);
-      this.router.navigateByUrl('/login');
-    });
+  ngOnDestroy(): void {
+    this.userService.logout();
   }
 
 }

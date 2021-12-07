@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Router} from "@angular/router";
 import {StateService} from "../../services/state.service";
 import {UserShortDTO} from "../../model/UserShortDTO";
@@ -6,13 +6,18 @@ import {ApiService} from "../../services/api.service";
 import {GameInfoShort} from "../../model/GameInfoShort";
 import {NotificationService} from "../../services/notification.service";
 import {WebSocketAPI} from "../../services/WebSocketAPI";
+import {UserService} from "../../services/user.service";
+import {Subject} from "rxjs";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'bg-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+
+  private unsubscribeSubject$ = new Subject();
 
   user = new UserShortDTO();
 
@@ -22,30 +27,22 @@ export class HomeComponent implements OnInit {
   allGames: GameInfoShort[];
 
   constructor(private router: Router,
-              private stateService: StateService,
               private api: ApiService,
               private notificationService: NotificationService,
-              private webSocketAPI: WebSocketAPI) {
+              private webSocketAPI: WebSocketAPI,
+              private userService: UserService) {
     this.allGames = [];
+    this.notificationService.loginSubject$
+      .pipe(takeUntil(this.unsubscribeSubject$))
+      .subscribe(() => this.user = this.userService.getUser());
   }
 
   ngOnInit(): void {
-    const auth = this.stateService.auth();
-
-    this.api.login(auth).subscribe(res => {
-      this.user = new UserShortDTO().formObj(res);
-    }, error => {
-      console.error(error);
-      this.router.navigateByUrl('/login');
-    });
-
     this.loadAllGames();
   }
 
   logout() {
-    this.stateService.logout();
-    this.router.navigateByUrl('/login');
-    this.notificationService.logoutSubject.next();
+    this.userService.logout();
   }
 
   createGameClick() {
@@ -62,6 +59,10 @@ export class HomeComponent implements OnInit {
     this.api.getAllGamesInfoShort().subscribe(responseGames => {
       this.allGames = responseGames.map((gameInfo: any) => new GameInfoShort().formObj(gameInfo));
     }, error => this.notificationService.errorHttpRequest(error));
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribeSubject$.next();
   }
 
 }

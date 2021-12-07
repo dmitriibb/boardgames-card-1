@@ -7,6 +7,9 @@ import {GameUpdateDTO} from "../../model/GameUpdateDTO";
 import {PlayerShortDTO} from "../../model/PlayerShortDTO";
 import {WebSocketAPI} from "../../services/WebSocketAPI";
 import {CLIENT_MESSAGE_TYPE_DRAW_CARD_FROM_DECK} from "../../core/constants";
+import {StateService} from "../../services/state.service";
+import {CardService} from "../../services/card.service";
+import {CardDTO} from "../../model/CardDTO";
 
 @Component({
   selector: 'bg-game',
@@ -25,7 +28,9 @@ export class GameComponent implements OnInit, OnDestroy {
 
   constructor(private gameService: GameService,
               private notificationService: NotificationService,
-              private webSocketAPI: WebSocketAPI) {
+              private webSocketAPI: WebSocketAPI,
+              private stateService: StateService,
+              private cardService: CardService) {
 
     this.loadGameUpdate(this.notificationService.getGameUpdateValue());
   }
@@ -43,8 +48,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private drawCardFromDeck() {
     const message = {
-      type: CLIENT_MESSAGE_TYPE_DRAW_CARD_FROM_DECK,
-      payload: 1
+      type: CLIENT_MESSAGE_TYPE_DRAW_CARD_FROM_DECK
     }
     this.webSocketAPI.send(message);
   }
@@ -55,10 +59,15 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private loadGameUpdate(gameUpdate) {
+    this.stateService.setGameId(gameUpdate.id);
     this.game = gameUpdate;
     this.me = gameUpdate.me;
     this.players = gameUpdate.otherPlayers;
     this.cardsInDeck = gameUpdate.cardsInDeck;
+    this.game.table = this.game.table.map(card => {
+      card.description = this.cardService.getDescription(card.descriptionId);
+      return card;
+    })
   }
 
 }

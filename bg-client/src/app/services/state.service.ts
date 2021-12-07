@@ -7,6 +7,7 @@ import {AUTHORIZATION_VALUE, STORAGE_USER} from "../core/constants";
 export class StateService {
 
   private _auth = 'Basic ZGltYUB0ZXN0LmNvbTpxd2VydHk=';
+  private currentGameId = null;
 
   constructor() {}
 
@@ -25,6 +26,14 @@ export class StateService {
   auth(): string {
     //return localStorage.getItem(AUTHORIZATION_VALUE) || '';
     return this._auth;
+  }
+
+  setGameId(gameId) {
+    this.currentGameId = gameId;
+  }
+
+  gameId() {
+    return this.currentGameId;
   }
 
 }

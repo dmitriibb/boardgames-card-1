@@ -18,5 +18,9 @@ public interface CardService {
 
     int getCardInDeckNumber(Game game);
 
+    List<Card> getCardGameTable(Game game);
+
+    Card getCardFromDeck(Game game);
+
 
 }

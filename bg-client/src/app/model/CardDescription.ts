@@ -5,7 +5,7 @@ export class CardDescription {
   type: string;
   points: number;
   coins: number;
-  color string;
+  color: string;
   houses: number;
   crosses: number;
   anchors: number;

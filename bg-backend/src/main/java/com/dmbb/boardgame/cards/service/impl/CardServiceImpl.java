@@ -65,6 +65,23 @@ public class CardServiceImpl implements CardService {
         return cardRepository.countByGameAndStatus(game, CardStatus.DECK);
     }
 
+    @Override
+    public List<Card> getCardGameTable(Game game) {
+        return cardRepository.getCardByGameAndStatusOrderByCardOrder(game, CardStatus.TABLE);
+    }
+
+    @Override
+    public Card getCardFromDeck(Game game) {
+        List<Card> cards = cardRepository.getCardByGameAndStatusOrderByCardOrder(game, CardStatus.DECK);
+        if (cards.isEmpty())
+            throw new RuntimeException("Deck is empty for game: " + game.getId());
+
+        Card card = cards.get(0);
+        card.setStatus(CardStatus.TABLE);
+        cardRepository.save(card);
+        return card;
+    }
+
     private void setCardOrder(List<Card> cards) {
         for (int i = 0; i < cards.size(); i++) {
             cards.get(i).setCardOrder(i);

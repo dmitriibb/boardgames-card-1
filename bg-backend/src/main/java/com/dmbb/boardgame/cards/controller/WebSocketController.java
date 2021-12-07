@@ -23,9 +23,10 @@ public class WebSocketController {
     public void messageFromUser(SimpMessageHeaderAccessor sha,
                                 @Header("Authorization") String auth,
                                 @Header("simpUser") Principal principal,
+                                @Header(name = "gameId", required = false) Integer gameId,
                                 @Payload ClientMessageDTO messageDTO) {
 
-        messageReceiverService.messageFromUser(messageDTO, auth, principal.getName());
+        messageReceiverService.messageFromUser(messageDTO, auth, principal.getName(), gameId);
     }
 
 }

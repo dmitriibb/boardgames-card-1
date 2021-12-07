@@ -12,7 +12,8 @@ export class NotificationService {
 
   private errorSubject: Subject<string>  = new Subject();
   private serverMessagesSubject: Subject<any> = new Subject();
-  private gameUpdateSubject$: BehaviorSubject<GameUpdateDTO> = new BehaviorSubject<GameUpdateDTO>(this.emptyGameUpdateDTO());
+  private gameUpdateSubject$: BehaviorSubject<GameUpdateDTO> = new BehaviorSubject<GameUpdateDTO>(new GameUpdateDTO());
+  loginSubject$: Subject<void> = new Subject();
   logoutSubject: Subject<void> = new Subject();
 
   constructor() { }
@@ -50,15 +51,6 @@ export class NotificationService {
 
   getGameUpdateValue() {
     return this.gameUpdateSubject$.value;
-  }
-
-  private emptyGameUpdateDTO() {
-    const gameUpdate = new GameUpdateDTO();
-    gameUpdate.me = new PlayerShortDTO();
-    gameUpdate.otherPlayers = [];
-    gameUpdate.cardsInDeck = 0;
-    gameUpdate.table = [];
-    return gameUpdate;
   }
 
 }

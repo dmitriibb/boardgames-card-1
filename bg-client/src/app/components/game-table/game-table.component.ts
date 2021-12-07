@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {GameUpdateDTO} from "../../model/GameUpdateDTO";
 
 @Component({
   selector: 'bg-game-table',
@@ -7,7 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GameTableComponent implements OnInit {
 
-  constructor() { }
+  @Input('gameUpdate')
+  gameUpdate: GameUpdateDTO;
+
+  constructor() {
+    this.gameUpdate = new GameUpdateDTO();
+  }
 
   ngOnInit(): void {
   }

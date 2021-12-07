@@ -9,6 +9,8 @@ import java.util.List;
 @Setter
 public class GameUpdateDTO {
 
+    private int id;
+
     private PlayerShortDTO me;
 
     private List<PlayerShortDTO> otherPlayers;

@@ -1,6 +1,13 @@
+import {CardDescription} from "./CardDescription";
+
 export class CardDTO {
   id: number;
-  description: string;
+  descriptionId: number;
+  description: CardDescription;
+
+  constructor() {
+    this.description = new CardDescription();
+  }
 
   fromObj(obj) {
     Object.assign(this, obj);
