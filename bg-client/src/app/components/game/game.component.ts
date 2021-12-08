@@ -6,7 +6,7 @@ import {takeUntil} from "rxjs/operators";
 import {GameUpdateDTO} from "../../model/GameUpdateDTO";
 import {PlayerShortDTO} from "../../model/PlayerShortDTO";
 import {WebSocketAPI} from "../../services/WebSocketAPI";
-import {CLIENT_MESSAGE_TYPE_DRAW_CARD_FROM_DECK} from "../../core/constants";
+import {CLIENT_MESSAGE_TYPE_DRAW_CARD_FROM_DECK, CLIENT_MESSAGE_TYPE_PASS} from "../../core/constants";
 import {StateService} from "../../services/state.service";
 import {CardService} from "../../services/card.service";
 import {CardDTO} from "../../model/CardDTO";
@@ -70,4 +70,10 @@ export class GameComponent implements OnInit, OnDestroy {
     })
   }
 
+  playerPass() {
+    const message = {
+      type: CLIENT_MESSAGE_TYPE_PASS
+    }
+    this.webSocketAPI.send(message);
+  }
 }

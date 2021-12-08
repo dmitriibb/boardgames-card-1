@@ -1,12 +1,12 @@
 
 .player-main-border {
-  border: blue dashed 2px;
+  border: blue dashed 4px;
 }
 
 .player-active-border {
-  border: green dashed 2px;
+  border: green dashed 4px;
 }
 
 .player-waiting-border {
-  border: black dashed 2px;
+  border: black dashed 4px;
 }

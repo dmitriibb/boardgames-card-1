@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {GameUpdateDTO} from "../model/GameUpdateDTO";
-import {SERVER_MESSAGE_TYPE_GAME_UPDATE} from "../core/constants";
+import {SERVER_MESSAGE_TYPE_ERROR, SERVER_MESSAGE_TYPE_GAME_UPDATE} from "../core/constants";
 import {UserShortDTO} from "../model/UserShortDTO";
 import {PlayerShortDTO} from "../model/PlayerShortDTO";
 
@@ -10,7 +10,7 @@ import {PlayerShortDTO} from "../model/PlayerShortDTO";
 })
 export class NotificationService {
 
-  private errorSubject: Subject<string>  = new Subject();
+  private errorSubject$: Subject<string>  = new Subject();
   private serverMessagesSubject: Subject<any> = new Subject();
   private gameUpdateSubject$: BehaviorSubject<GameUpdateDTO> = new BehaviorSubject<GameUpdateDTO>(new GameUpdateDTO());
   loginSubject$: Subject<void> = new Subject();
@@ -19,16 +19,16 @@ export class NotificationService {
   constructor() { }
 
   errorMessage(errorMessage: string) {
-    this.errorSubject.next(errorMessage);
+    this.errorSubject$.next(errorMessage);
   }
 
   errorHttpRequest(errorResponse: any) {
     const errorMessage = errorResponse.error.message;
-    this.errorSubject.next(errorMessage);
+    this.errorSubject$.next(errorMessage);
   }
 
   subscribeForErrors() {
-    return this.errorSubject.asObservable();
+    return this.errorSubject$.asObservable();
   }
 
   messageFromServer(message) {
@@ -37,6 +37,8 @@ export class NotificationService {
 
     if (type === SERVER_MESSAGE_TYPE_GAME_UPDATE)
       this.gameUpdateSubject$.next(new GameUpdateDTO().fromObj(payload));
+    else if (type === SERVER_MESSAGE_TYPE_ERROR)
+      this.errorSubject$.next(payload);
     else
       this.serverMessagesSubject.next(message);
   }

@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.user = this.userService.getUser();
     this.loadAllGames();
   }
 

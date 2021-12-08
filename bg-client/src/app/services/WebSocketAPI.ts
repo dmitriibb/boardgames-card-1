@@ -5,6 +5,7 @@ import {NotificationService} from "./notification.service";
 import {StateService} from "./state.service";
 import {Injectable} from "@angular/core";
 import {CLIENT_MESSAGE_TYPE_ASK_FOR_ACTIVE_GAME_UPDATE} from "../core/constants";
+import {ApiService} from "./api.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,14 +15,15 @@ export class WebSocketAPI {
   webSocketEndPoint: string = 'http://localhost:8080/ws';
   destinationToRead: string = '/secured/user/queue/messages'
   destinationToSend: string = '/app/user/message';
-  notificationService: NotificationService;
-  stateService: StateService;
   stompClient: any;
   sessionId: any;
 
-  constructor(notificationService: NotificationService, stateService: StateService){
-    this.notificationService = notificationService;
-    this.stateService = stateService;
+  useRestAPIForSend = true;
+
+  constructor(private notificationService: NotificationService,
+              private stateService: StateService,
+              private api: ApiService){
+
   }
 
   _connect() {
@@ -45,7 +47,7 @@ export class WebSocketAPI {
         _this.notificationService.messageFromServer(JSON.parse(sdkEvent.body));
       });
 
-      _this.send({type: CLIENT_MESSAGE_TYPE_ASK_FOR_ACTIVE_GAME_UPDATE})
+      setTimeout(() => _this.send({type: CLIENT_MESSAGE_TYPE_ASK_FOR_ACTIVE_GAME_UPDATE}), 300);
 
     }, this.errorCallBack);
   };
@@ -72,7 +74,18 @@ export class WebSocketAPI {
    * @param {*} message
    */
   send(message) {
+    const body = {
+      type: message.type,
+      payload: (message.payload === undefined || message.payload === null) ? null : JSON.stringify(message.payload)
+    }
 
+    if (this.useRestAPIForSend)
+      this.sendViaRestAPI(body);
+    else
+      this.sendViaSocket(body);
+  }
+
+  private sendViaSocket(message) {
     const headers = {
       'Authorization': this.stateService.auth()
     }
@@ -81,12 +94,12 @@ export class WebSocketAPI {
     if (currentGameId)
       headers['gameId'] = currentGameId;
 
-    const body = {
-      type: message.type,
-      payload: (message.payload === undefined || message.payload === null) ? null : JSON.stringify(message.payload)
-    }
+    this.stompClient.send(this.destinationToSend, headers, JSON.stringify(message));
+  }
 
-    this.stompClient.send(this.destinationToSend, headers, JSON.stringify(body));
+  private sendViaRestAPI(message) {
+    this.api.sendUserMessage(message).subscribe(res => {},
+      error => this.notificationService.errorHttpRequest(error));
   }
 
 }

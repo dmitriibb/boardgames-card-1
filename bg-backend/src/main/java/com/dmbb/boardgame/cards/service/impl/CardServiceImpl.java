@@ -4,11 +4,15 @@ import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.entity.Game;
+import com.dmbb.boardgame.cards.model.entity.Player;
 import com.dmbb.boardgame.cards.model.enums.CardStatus;
 import com.dmbb.boardgame.cards.repository.CardDescriptionRepository;
 import com.dmbb.boardgame.cards.repository.CardRepository;
 import com.dmbb.boardgame.cards.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,6 +35,12 @@ public class CardServiceImpl implements CardService {
                 .stream()
                 .map(CardDescription::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public CardDescription getCardDescriptionById(int id) {
+        return cardDescriptionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Card description is not found for id: " + id));
     }
 
     @Override
@@ -80,6 +90,32 @@ public class CardServiceImpl implements CardService {
         card.setStatus(CardStatus.TABLE);
         cardRepository.save(card);
         return card;
+    }
+
+    @Override
+    public Card getCardById(int cardId) {
+        return cardRepository.findById(cardId)
+                .orElseThrow(() -> new RuntimeException("card is not found for id: " + cardId));
+    }
+
+    @Override
+    public void saveCard(Card card) {
+        this.cardRepository.save(card);
+    }
+
+    @Override
+    public void takeCardsAsCoinsToPlayer(Player player, Game game, int coinsNumber) {
+        Pageable pageable = PageRequest.of(0, coinsNumber, Sort.by("cardOrder"));
+        List<Card> cards = cardRepository.getCardByGameAndStatus(game, CardStatus.DECK, pageable);
+
+        if (cards.size() < coinsNumber)
+            throw new RuntimeException("Not enough cards in the deck. Current deck size is " + cards.size() + " cards");
+
+        cards.forEach(card -> {
+            card.setStatus(CardStatus.PLAYER_HAND);
+            card.setPlayer(player);
+            cardRepository.save(card);
+        });
     }
 
     private void setCardOrder(List<Card> cards) {

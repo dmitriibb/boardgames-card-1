@@ -60,9 +60,9 @@ public class Initializer {
         userRepository.save(user);
 
         User user2 = new User();
-        user2.setEmail("dima2@test.com");
+        user2.setEmail("john@test.com");
         user2.setPassword(passwordEncoder.encode("qwerty2"));
-        user2.setName("dima2");
+        user2.setName("john");
         user2.setActive(true);
 
         Set<UserRoles> roles2 = new HashSet<>();
@@ -97,7 +97,7 @@ public class Initializer {
         newGameDTO.setName("test game 1");
         GameInfoShortDTO gameInfoShortDTO = gameInfoService.createNewGame(admin, newGameDTO);
 
-        User user2 = userRepository.getByEmail("dima2@test.com");
+        User user2 = userRepository.getByEmail("john@test.com");
         gameInfoService.joinGame(user2, gameInfoShortDTO.getId());
 
         gameService.startGame(admin, gameInfoShortDTO.getId());

@@ -7,11 +7,15 @@ import {UserShortDTO} from "../model/UserShortDTO";
 import {C} from "@angular/cdk/keycodes";
 import {WebSocketAPI} from "./WebSocketAPI";
 import {CardService} from "./card.service";
+import {Location} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+
+  private userDimaAuth = 'Basic ZGltYUB0ZXN0LmNvbTpxd2VydHk=';
+  private userJohnAuth = 'Basic am9obkB0ZXN0LmNvbTpxd2VydHky';
 
   private currentUser: UserShortDTO;
 
@@ -19,7 +23,8 @@ export class UserService {
               private stateService: StateService,
               private router: Router,
               private notificationService: NotificationService,
-              private webSocketApi: WebSocketAPI,) {
+              private webSocketApi: WebSocketAPI,
+              private cardService: CardService) {
     this.currentUser = new UserShortDTO();
   }
 
@@ -33,7 +38,8 @@ export class UserService {
     this.api.login(auth).subscribe(res => {
       this.currentUser = new UserShortDTO().formObj(res);
       this.stateService.saveAuth(auth);
-      this.notificationService.loginSubject$.next();
+      //this.notificationService.loginSubject$.next();
+      this.cardService.uploadCardDescriptions();
       this.webSocketApi._connect();
       this.router.navigateByUrl('/home');
     }, error => this.notificationService.errorHttpRequest(error));

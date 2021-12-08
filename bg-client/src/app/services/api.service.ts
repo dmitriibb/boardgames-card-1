@@ -37,10 +37,21 @@ export class ApiService {
     return this.http.get(BASE_URL + '/card/descriptions', {headers: this.getBaseHeaders()});
   }
 
-  private getBaseHeaders() {
+  sendUserMessage(message) {
+    let headers = this.getBaseHeaders();
+
+    const gameId = this.stateService.gameId();
+
+    if (gameId)
+      headers = {...headers, "GameId": ''+gameId};
+
+    return this.http.put(BASE_URL + '/user/rest/message', message, {headers: headers})
+  }
+
+  private getBaseHeaders(): any {
     return {
-      "Authorization": this.stateService.auth()
-    };
+      "Authorization" : this.stateService.auth()
+    } as any;
   }
 
 }

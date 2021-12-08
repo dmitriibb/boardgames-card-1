@@ -73,7 +73,7 @@ public class GameInfoServiceImpl implements GameInfoService {
         Player player = new Player();
         player.setGame(game);
         player.setUser(user);
-        player.setOrder(players.size());
+        player.setPlayerOrder(players.size());
         playerRepository.save(player);
     }
 

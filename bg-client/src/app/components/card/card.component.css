@@ -1,3 +1,30 @@
-.card-border {
-  border: #3dec31 solid 1px;
+.card-ship-header {
+  height: 20%;
+  width: 90%;
+}
+.card-ship-image {
+  height: 50%;
+  width: 100%;
+}
+
+.header-color-green {
+  background-color: green;
+}
+.header-color-black {
+  background-color: #181717;
+}
+.header-color-yellow {
+  background-color: yellow;
+  color: black;
+}
+.header-color-blue {
+  background-color: blue;
+}
+.header-color-red {
+  background-color: red;
+}
+
+.card-sword-image {
+  width: 70%;
+  height: 70%;
 }

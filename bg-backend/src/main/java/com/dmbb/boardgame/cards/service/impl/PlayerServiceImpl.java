@@ -46,7 +46,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void sendMessageToUser(String username, String destination, Object payload) {
+    public void sendMessageToUser(String username, String destination, ServerMessageDTO payload) {
         try {
             messagingTemplate.convertAndSendToUser(username, destination, payload);
         } catch (Exception e) {
@@ -61,8 +61,39 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public void savePlayer(Player player) {
+        playerRepository.save(player);
+    }
+
+    @Override
+    public List<Player> getPlayersByGame(Game game) {
+        return playerRepository.getAllByGameOrderByPlayerOrder(game);
+    }
+
+    @Override
+    public Player getPlayerByGameAndUser(User user, Game game) {
+        return playerRepository.findByUserAndGame(user, game)
+                .orElseThrow(() -> new RuntimeException("Player is not found for user: " + user.getUsername() + " and game id: " + game.getId()));
+    }
+
+    @Override
     public String getUsernameByPlayerId(int playerId) {
         return playerRepository.getUsernameByPlayerId(playerId);
+    }
+
+    @Override
+    public void sendErrorToUser(String username, String error) {
+        ServerMessageDTO messageDTO = new ServerMessageDTO(ServerMessageType.ERROR, error);
+        sendMessageToUser(username, Constants.TOPIC_MESSAGES, messageDTO);
+    }
+
+    @Override
+    public Player getNextPlayer(Game game, Player currentPlayer) {
+        Player nextPlayer = playerRepository.findFirstByGameAndPlayerOrderGreaterThanOrderByPlayerOrder(game, currentPlayer.getPlayerOrder());
+        if (nextPlayer == null)
+            nextPlayer = playerRepository.findFirstByGameOrderByPlayerOrder(currentPlayer.getGame());
+
+        return nextPlayer;
     }
 
 

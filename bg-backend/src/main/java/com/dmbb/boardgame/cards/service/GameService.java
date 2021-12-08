@@ -13,4 +13,10 @@ public interface GameService {
 
     void drawCardFromDeck(User user, int gameId);
 
+    void sellShip(User user, int gameId, int cardId);
+
+    void destroyShip(User user, int gameId, int cardId);
+
+    void playerPass(User user, int gameId);
+
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {TestWebSocketAPI} from "../../services/testWebSocketAPI";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'bg-my-test',
@@ -17,7 +18,7 @@ export class MyTestComponent implements OnInit {
 
   messages: string[] = [];
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
     this.webSocketAPI = new TestWebSocketAPI(this);
@@ -48,4 +49,15 @@ export class MyTestComponent implements OnInit {
   subscribeForNewTopic() {
     this.webSocketAPI.subscribeForUrl(this.newListeningTopic);
   }
+
+  setUserDima() {
+    this.userService.logout();
+    this.userService.authorize('Basic ZGltYUB0ZXN0LmNvbTpxd2VydHk=');
+  }
+
+  setUserJohn() {
+    this.userService.logout();
+    this.userService.authorize('Basic am9obkB0ZXN0LmNvbTpxd2VydHky');
+  }
+
 }

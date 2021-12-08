@@ -1,4 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.bg-card {
+  height: 270px;
+  max-height: 270px;
+  width: 150px;
+  max-width: 150px;
+  border: black solid 1px;
+  border-radius: 10%;
+  background-color: rgba(101, 99, 99, 0.96);
+  color: white;
+}

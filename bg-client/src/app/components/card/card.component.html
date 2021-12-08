@@ -1,9 +1,57 @@
-<div class="container card-border">
-  <div class="col">
-    <div class="row"><p>id: {{card.id}}</p></div>
-    <div class="row"><p>name: {{card.description.name}}</p></div>
-    <div class="row"><p>points: {{card.description.points}}</p></div>
-    <div class="row"><p>coins: {{card.description.coins}}</p></div>
-    <div class="row"><p>type: {{card.description.type}}</p></div>
-  </div>
+<div class="container bg-card">
+
+  <ng-template #ship [ngIf]="card.description.type === 'SHIP'">
+    <div class="col">
+      <div class="row card-ship-header "
+           [ngClass]="{
+           'header-color-green': card.description.color === 'GREEN',
+           'header-color-black': card.description.color === 'BLACK',
+           'header-color-yellow': card.description.color === 'YELLOW',
+           'header-color-blue': card.description.color === 'BLUE',
+           'header-color-red': card.description.color === 'RED'}">
+        <div class="row">
+          <p>{{card.description.coins}} <mat-icon>attach_money</mat-icon></p>
+        </div>
+        <div class="row">
+          <p>{{card.description.name}}</p>
+        </div>
+      </div>
+      <div class="row card-ship-image">
+        <img src="assets/ship-placeholder.png">
+      </div>
+
+      <div class="row">
+        <div class="col-1">
+          <p>
+            {{card.description.swords}}
+          </p>
+        </div>
+        <div class="col-4">
+          <img class="card-sword-image" src="assets/sword.png">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <button (click)="sellShip()">sell</button>
+        </div>
+        <div class="col">
+          <button (click)="destroyShip()">destroy</button>
+        </div>
+      </div>
+
+    </div>
+  </ng-template>
+
+  <ng-template #otherCard [ngIf]="card.description.type !== 'SHIP'">
+    <div class="col" >
+      <div class="row"><p>id: {{card.id}}</p></div>
+      <div class="row"><p>name: {{card.description.name}}</p></div>
+      <div class="row"><p>points: {{card.description.points}}</p></div>
+      <div class="row"><p>coins: {{card.description.coins}}</p></div>
+      <div class="row"><p>type: {{card.description.type}}</p></div>
+    </div>
+  </ng-template>
+
+
 </div>

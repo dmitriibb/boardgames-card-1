@@ -33,7 +33,7 @@ public class Player {
     private Game game;
 
     @Column(name = "player_order")
-    private int order;
+    private int playerOrder;
 
     private int coins;
 
