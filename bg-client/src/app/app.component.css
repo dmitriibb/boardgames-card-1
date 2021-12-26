@@ -8,3 +8,15 @@ body {
   width: 100vw;
   height: 100vh;
 }
+.my-main-modal {
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  min-height: 300px;
+  min-width: 500px;
+  padding: 10em;
+  background-color: rgb(157, 225, 102);
+  opacity: 0.95;
+  border: black solid 2px;
+  border-radius: 2%;
+}

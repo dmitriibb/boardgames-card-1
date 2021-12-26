@@ -80,7 +80,13 @@ public class MessageReceiverServiceImpl implements MessageReceiverService {
                 cardClickDTO = gson.fromJson(messageDTO.getPayload(), CardClickDTO.class);
                 gameService.destroyShip(user, gameId, cardClickDTO.getCardId());
                 break;
+            case BUY_PERSON:
+                cardClickDTO = gson.fromJson(messageDTO.getPayload(), CardClickDTO.class);
+                gameService.buyPerson(user, gameId, cardClickDTO.getCardId());
+                break;
             case PASS:
+                gameService.playerPass(user, gameId);
+                break;
 
             default:
                 throw new RuntimeException("Unsupported message type: " + messageDTO.getType());

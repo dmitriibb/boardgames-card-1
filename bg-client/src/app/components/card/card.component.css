@@ -1,10 +1,22 @@
-.card-ship-header {
+.card-header {
   height: 20%;
-  width: 90%;
+  width: 100%;
+  margin: auto;
 }
 .card-ship-image {
   height: 50%;
   width: 100%;
+}
+
+.card-person-image {
+  height: 50%;
+  width: 100%;
+}
+
+.card-header-person-props {
+  height: 40px;
+  width: 100px;
+  margin: auto;
 }
 
 .header-color-green {
@@ -28,3 +40,11 @@
   width: 70%;
   height: 70%;
 }
+
+.card-person-image {
+  width: 70%;
+  height: 70%;
+}
+
+
+

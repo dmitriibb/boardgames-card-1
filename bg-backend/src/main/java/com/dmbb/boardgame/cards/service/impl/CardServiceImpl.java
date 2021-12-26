@@ -1,11 +1,14 @@
 package com.dmbb.boardgame.cards.service.impl;
 
+import com.dmbb.boardgame.cards.config.Constants;
 import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
 import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.entity.Game;
 import com.dmbb.boardgame.cards.model.entity.Player;
+import com.dmbb.boardgame.cards.model.enums.CardColor;
 import com.dmbb.boardgame.cards.model.enums.CardStatus;
+import com.dmbb.boardgame.cards.model.enums.CardType;
 import com.dmbb.boardgame.cards.repository.CardDescriptionRepository;
 import com.dmbb.boardgame.cards.repository.CardRepository;
 import com.dmbb.boardgame.cards.service.CardService;
@@ -116,6 +119,17 @@ public class CardServiceImpl implements CardService {
             card.setPlayer(player);
             cardRepository.save(card);
         });
+    }
+
+    @Override
+    public List<CardDescription> getCardsByGameTypeAndStatus(Game game, CardType type, CardStatus status) {
+        return cardDescriptionRepository.getAllByGameAndTypeAndCardStatus(game, type, status);
+    }
+
+    @Override
+    public int additionalCoinsForShipColor(Player player, CardColor cardColor) {
+        return cardDescriptionRepository.countByPlayerAndStatusAndNameAndTypeAndColor(player, CardStatus.PLAYER_TABLE,
+                Constants.CARD_PERSON_TRADER, CardType.PERSON, cardColor);
     }
 
     private void setCardOrder(List<Card> cards) {

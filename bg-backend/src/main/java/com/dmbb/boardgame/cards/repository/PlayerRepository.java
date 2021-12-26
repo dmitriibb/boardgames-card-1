@@ -22,4 +22,7 @@ public interface PlayerRepository extends JpaRepository<Player, Integer> {
     Player findFirstByGameOrderByPlayerOrder(Game game);
 
     List<Player> getAllByGameOrderByPlayerOrder(Game game);
+
+    @Query("select p.user.email from Player p where p.game = :game")
+    List<String> findUsernamesByGame(Game game);
 }

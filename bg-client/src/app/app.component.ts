@@ -28,6 +28,11 @@ export class AppComponent implements OnInit, OnDestroy{
   @ViewChild('infoMessageModal')
   infoMessageModal: any;
 
+
+  isShowMyModal = false;
+  myModalContent = '';
+  tmpMessagesBuffer: string[] = [];
+
   constructor(private messageExchangeService: NotificationService,
               private modalService: NgbModal,
               private stateService: StateService,
@@ -50,11 +55,33 @@ export class AppComponent implements OnInit, OnDestroy{
       this.modalService.open(this.infoMessageModal);
     });
 
+    this.notificationService.subscribeForTmpMessages().subscribe(message => {
+      this.tmpMessagesBuffer.push(message);
+      this.showNextTmpMessage();
+    })
+
     this.userService.authorize();
   }
 
   ngOnDestroy(): void {
     this.userService.logout();
+  }
+
+  showNextTmpMessage() {
+    if (this.isShowMyModal)
+      return;
+
+    if (!this.tmpMessagesBuffer.length)
+      return;
+
+    const message = this.tmpMessagesBuffer.splice(0, 1)[0];
+    this.myModalContent = message;
+    this.isShowMyModal = true;
+
+    setTimeout(() => {
+      this.isShowMyModal = false;
+      setTimeout(() => this.showNextTmpMessage(), 500);
+    }, 3000);
   }
 
 }

@@ -14,6 +14,8 @@ public interface PlayerService {
 
     void notifyPlayers(GameUpdateDTO gameUpdateDTO);
 
+    void sendShortMessageToPlayers(Game game, String message);
+
     void sendMessageToUser(String username, String destination, ServerMessageDTO payload);
 
     Player getPlayerById(int id);

@@ -40,6 +40,15 @@ public class PlayerServiceImpl implements PlayerService {
         });
     }
 
+    @Override
+    public void sendShortMessageToPlayers(Game game, String message) {
+        List<String> usernames = playerRepository.findUsernamesByGame(game);
+        usernames.forEach(username -> {
+            ServerMessageDTO messageDTO = new ServerMessageDTO(ServerMessageType.SHORT_MESSAGE, message);
+            sendMessageToUser(username, Constants.TOPIC_MESSAGES, messageDTO);
+        });
+    }
+
     private void sendGameUpdateDTOToPlayer(String username, GameUpdateDTO gameUpdateDTO) {
         ServerMessageDTO messageDTO = new ServerMessageDTO(ServerMessageType.GAME_UPDATE, gameUpdateDTO);
         sendMessageToUser(username, Constants.TOPIC_MESSAGES, messageDTO);

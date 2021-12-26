@@ -51,4 +51,10 @@ public class HomeController {
     public void sendGameUpdate(@PathVariable int gameId) {
         gameService.sendGameUpdateForAllPlayers(gameId);
     }
+
+    @PutMapping("/short-message/{username}")
+    public void sendShortMessageToUser(@PathVariable String username, @RequestBody String message) {
+        ServerMessageDTO dto = new ServerMessageDTO(ServerMessageType.SHORT_MESSAGE, message);
+        playerService.sendMessageToUser(username, Constants.TOPIC_MESSAGES, dto);
+    }
 }

@@ -5,6 +5,9 @@ import com.dmbb.boardgame.cards.model.entity.Card;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.entity.Game;
 import com.dmbb.boardgame.cards.model.entity.Player;
+import com.dmbb.boardgame.cards.model.enums.CardColor;
+import com.dmbb.boardgame.cards.model.enums.CardStatus;
+import com.dmbb.boardgame.cards.model.enums.CardType;
 
 import java.util.List;
 import java.util.Map;
@@ -31,5 +34,8 @@ public interface CardService {
 
     void takeCardsAsCoinsToPlayer(Player player, Game game, int coinsNumber);
 
+    List<CardDescription> getCardsByGameTypeAndStatus(Game game, CardType type, CardStatus status);
+
+    int additionalCoinsForShipColor(Player player, CardColor cardColor);
 
 }

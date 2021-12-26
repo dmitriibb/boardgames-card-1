@@ -17,6 +17,8 @@ public interface GameService {
 
     void destroyShip(User user, int gameId, int cardId);
 
+    void buyPerson(User user, int gameId, int cardId);
+
     void playerPass(User user, int gameId);
 
 }

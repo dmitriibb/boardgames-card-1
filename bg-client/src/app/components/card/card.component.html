@@ -2,7 +2,7 @@
 
   <ng-template #ship [ngIf]="card.description.type === 'SHIP'">
     <div class="col">
-      <div class="row card-ship-header "
+      <div class="row card-header "
            [ngClass]="{
            'header-color-green': card.description.color === 'GREEN',
            'header-color-black': card.description.color === 'BLACK',
@@ -43,7 +43,51 @@
     </div>
   </ng-template>
 
-  <ng-template #otherCard [ngIf]="card.description.type !== 'SHIP'">
+  <ng-template #person [ngIf]="card.description.type === 'PERSON'">
+    <div class="col">
+      <div class="row card-header ">
+        <div class="col-10 card-header-person-props"
+             [ngClass]="{
+           'header-color-green': card.description.color == 'GREEN',
+           'header-color-black': card.description.color == 'BLACK',
+           'header-color-yellow': card.description.color == 'YELLOW',
+           'header-color-blue': card.description.color == 'BLUE',
+           'header-color-red': card.description.color == 'RED'}">
+
+        </div>
+
+        <div class="col-1">
+          <p>{{card.description.points}}</p>
+        </div>
+        <div class="col-1"><mat-icon>security</mat-icon></div>
+
+      </div>
+
+      <div class="row card-person-image">
+        <img src="assets/person.png">
+      </div>
+
+      <div class="row">
+        <div class="col">
+          {{card.description.coins}}
+        </div>
+        <div class="row">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+      </div>
+      <div class="row">
+        <p [textContent]="card.description.name"></p>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <button (click)="buyPerson()">buy</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #otherCard [ngIf]="card.description.type !== 'SHIP' && card.description.type !== 'PERSON'">
     <div class="col" >
       <div class="row"><p>id: {{card.id}}</p></div>
       <div class="row"><p>name: {{card.description.name}}</p></div>
@@ -52,6 +96,5 @@
       <div class="row"><p>type: {{card.description.type}}</p></div>
     </div>
   </ng-template>
-
 
 </div>

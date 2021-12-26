@@ -7,9 +7,7 @@ import com.dmbb.boardgame.cards.model.dto.GameUpdateDTO;
 import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.dto.ServerMessageDTO;
 import com.dmbb.boardgame.cards.model.entity.*;
-import com.dmbb.boardgame.cards.model.enums.CardStatus;
-import com.dmbb.boardgame.cards.model.enums.GameStatus;
-import com.dmbb.boardgame.cards.model.enums.ServerMessageType;
+import com.dmbb.boardgame.cards.model.enums.*;
 import com.dmbb.boardgame.cards.repository.GameRepository;
 import com.dmbb.boardgame.cards.repository.PlayerRepository;
 import com.dmbb.boardgame.cards.service.CardService;
@@ -23,10 +21,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,10 +32,8 @@ public class GameServiceImpl implements GameService {
 
     private final static int INIT_CARD_AMOUNT = 3;
 
-    private final SimpMessageSendingOperations messagingTemplate;
     private final GameRepository gameRepository;
     private final CardService cardService;
-    private final PlayerRepository playerRepository;
     private final PlayerService playerService;
 
     @Override
@@ -91,9 +84,31 @@ public class GameServiceImpl implements GameService {
         log.info(user.getName() + " is drawing card from deck for game id: " + gameId);
         Game game = getGameById(gameId);
         validateActivePlayer(user, game);
-        cardService.getCardFromDeck(game);
+        Card card = cardService.getCardFromDeck(game);
         sendGameUpdateToPlayers(game);
 
+        CardDescription cardDescription = cardService.getCardDescriptionById(card.getCardDescriptionId());
+
+        if (cardDescription.getType() == CardType.SHIP) {
+            checkFor3SameColorShips(game);
+        }
+
+    }
+
+    private void checkFor3SameColorShips(Game game) {
+        if (!gameHas3SameColorShips(game))
+            return;
+
+        playerService.sendShortMessageToPlayers(game, "3 ships with the same color");
+        setNextMainPlayerAndNotify(game);
+    }
+
+    private void throwGameTableToGarbage(Game game) {
+        List<Card> cardsTable = cardService.getCardGameTable(game);
+        cardsTable.forEach(card -> {
+            card.setStatus(CardStatus.GARBAGE);
+            cardService.save(card);
+        });
     }
 
     @Override
@@ -105,16 +120,24 @@ public class GameServiceImpl implements GameService {
         CardDescription cardDescription = cardService.getCardDescriptionById(card.getCardDescriptionId());
         Player player = playerService.getPlayerByGameAndUser(user, game);
 
-        cardService.takeCardsAsCoinsToPlayer(player, game, cardDescription.getCoins());
+        int coinsToPlayer = cardDescription.getCoins();
+        coinsToPlayer += cardService.additionalCoinsForShipColor(player, cardDescription.getColor());
+        cardService.takeCardsAsCoinsToPlayer(player, game, coinsToPlayer);
 
         card.setStatus(CardStatus.GARBAGE);
         cardService.save(card);
 
-        player.setCoins(player.getCoins() + cardDescription.getCoins());
+        Player mainPlayer = playerService.getPlayerById(game.getMainPlayerId());
+        if (!mainPlayer.equals(player)) {
+            coinsToPlayer--;
+            mainPlayer.setCoins(mainPlayer.getCoins() + 1);
+            playerService.savePlayer(mainPlayer);
+        }
+
+        player.setCoins(player.getCoins() + coinsToPlayer);
         playerService.savePlayer(player);
 
         setNextActivePlayerAndNotify(game, player);
-        //sendGameUpdateToPlayers(game.getId());
     }
 
     @Override
@@ -139,12 +162,57 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    public void buyPerson(User user, int gameId, int cardId) {
+        Game game = getGameById(gameId);
+        validateActivePlayer(user, game);
+
+        Card card = cardService.getCardById(cardId);
+        CardDescription cardDescription = cardService.getCardDescriptionById(card.getCardDescriptionId());
+        Player player = playerService.getPlayerByGameAndUser(user, game);
+
+        Player mainPlayer = playerService.getPlayerById(game.getMainPlayerId());
+
+        int cost = cardDescription.getCoins();
+        if (!mainPlayer.equals(player)) {
+            cost++;
+        }
+
+        if (player.getCoins() < cost)
+            throw new RuleViolationException("You don't have enough money. You have: " + player.getCoins() + ", required: " + cost);
+
+        card.setStatus(CardStatus.PLAYER_TABLE);
+        card.setPlayer(player);
+        cardService.save(card);
+
+        player.setCoins(player.getCoins() - cost);
+        addPersonItemsToPlayer(player, cardDescription);
+        playerService.savePlayer(player);
+
+        if (!mainPlayer.equals(player)) {
+            mainPlayer.setCoins(mainPlayer.getCoins() + 1);
+            playerService.savePlayer(mainPlayer);
+        }
+
+        playerService.sendShortMessageToPlayers(game, "Player " + user.getName() + "bought card " + card.getId() + " - " + cardDescription.getName());
+
+        setNextActivePlayerAndNotify(game, player);
+    }
+
+    @Override
     public void playerPass(User user, int gameId) {
         Game game = getGameById(gameId);
         validateActivePlayer(user, game);
         Player player = playerService.getPlayerByGameAndUser(user, game);
 
         setNextActivePlayerAndNotify(game, player);
+    }
+
+    private void addPersonItemsToPlayer(Player player, CardDescription cardDescription) {
+        player.setPoints(player.getPoints() + cardDescription.getPoints());
+        player.setAnchors(player.getAnchors() + cardDescription.getAnchors());
+        player.setSwords(player.getSwords() + cardDescription.getSwords());
+        player.setCrosses(player.getCrosses() + cardDescription.getCrosses());
+        player.setHouses(player.getHouses() + cardDescription.getHouses());
     }
 
     private void sendGameUpdateToPlayers(int gameId) {
@@ -193,22 +261,44 @@ public class GameServiceImpl implements GameService {
                 game.setActivePlayerId(p.getId());
             }
 
-            playerRepository.save(p);
+            playerService.savePlayer(p);
         }
         gameRepository.save(game);
     }
 
     private void setNextActivePlayerAndNotify(Game game, Player currentPlayer) {
         Player nextPlayer = playerService.getNextPlayer(game, currentPlayer);
-        if (nextPlayer.getId() == game.getMainPlayerId()) {
-            nextPlayer = playerService.getNextPlayer(game, nextPlayer);
-            game.setMainPlayerId(nextPlayer.getId());
-        }
-        game.setActivePlayerId(nextPlayer.getId());
-        gameRepository.save(game);
 
+        if (nextPlayer.getId() == game.getMainPlayerId()) {
+            setNextMainPlayerAndNotify(game);
+        } else {
+            game.setActivePlayerId(nextPlayer.getId());
+            gameRepository.save(game);
+            sendGameUpdateToPlayers(game);
+        }
+    }
+
+    private void setNextMainPlayerAndNotify(Game game) {
+        throwGameTableToGarbage(game);
+
+        Player currentMainPlayer = playerService.getPlayerById(game.getMainPlayerId());
+        Player nextMainPlayer = playerService.getNextPlayer(game, currentMainPlayer);
+        game.setMainPlayerId(nextMainPlayer.getId());
+        game.setActivePlayerId(nextMainPlayer.getId());
+        gameRepository.save(game);
         sendGameUpdateToPlayers(game);
     }
+
+    private boolean gameHas3SameColorShips(Game game) {
+        List<CardDescription> allShips = cardService.getCardsByGameTypeAndStatus(game, CardType.SHIP, CardStatus.TABLE);
+        Map<CardColor, Long> shipsTotal = allShips.stream()
+                .collect(Collectors.groupingBy(CardDescription::getColor, Collectors.counting()));
+
+        return shipsTotal.values()
+                .stream()
+                .anyMatch(val -> val >= 3);
+    }
+
 
     private void distributeFirstCardsForPlayers(Game game, Queue<Card> deck) {
         game.getPlayers().forEach(player -> {
@@ -220,7 +310,7 @@ public class GameServiceImpl implements GameService {
                 cardService.save(card);
             }
             player.setCoins(INIT_CARD_AMOUNT);
-            playerRepository.save(player);
+            playerService.savePlayer(player);
         });
     }
 

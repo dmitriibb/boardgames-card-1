@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {GameUpdateDTO} from "../model/GameUpdateDTO";
-import {SERVER_MESSAGE_TYPE_ERROR, SERVER_MESSAGE_TYPE_GAME_UPDATE} from "../core/constants";
+import {
+  SERVER_MESSAGE_TYPE_ERROR,
+  SERVER_MESSAGE_TYPE_GAME_UPDATE,
+  SERVER_MESSAGE_TYPE_SHORT_MESSAGE
+} from "../core/constants";
 import {UserShortDTO} from "../model/UserShortDTO";
 import {PlayerShortDTO} from "../model/PlayerShortDTO";
 
@@ -11,6 +15,7 @@ import {PlayerShortDTO} from "../model/PlayerShortDTO";
 export class NotificationService {
 
   private errorSubject$: Subject<string>  = new Subject();
+  private tmpMessageSubject$: Subject<string>  = new Subject();
   private serverMessagesSubject: Subject<any> = new Subject();
   private gameUpdateSubject$: BehaviorSubject<GameUpdateDTO> = new BehaviorSubject<GameUpdateDTO>(new GameUpdateDTO());
   loginSubject$: Subject<void> = new Subject();
@@ -35,12 +40,23 @@ export class NotificationService {
     const type = message.type;
     const payload = message.payload;
 
-    if (type === SERVER_MESSAGE_TYPE_GAME_UPDATE)
-      this.gameUpdateSubject$.next(new GameUpdateDTO().fromObj(payload));
-    else if (type === SERVER_MESSAGE_TYPE_ERROR)
-      this.errorSubject$.next(payload);
-    else
-      this.serverMessagesSubject.next(message);
+    switch (type) {
+      case SERVER_MESSAGE_TYPE_GAME_UPDATE:
+        this.gameUpdateSubject$.next(new GameUpdateDTO().fromObj(payload));
+        break;
+
+      case SERVER_MESSAGE_TYPE_ERROR:
+        this.errorSubject$.next(payload);
+        break;
+
+      case SERVER_MESSAGE_TYPE_SHORT_MESSAGE:
+        this.tmpMessageSubject$.next(payload);
+        break;
+
+      default:
+        this.serverMessagesSubject.next(payload);
+    }
+
   }
 
   subscribeForMessagesFromServer(): Observable<any> {
@@ -53,6 +69,14 @@ export class NotificationService {
 
   getGameUpdateValue() {
     return this.gameUpdateSubject$.value;
+  }
+
+  subscribeForTmpMessages() {
+    return this.tmpMessageSubject$.asObservable();
+  }
+
+  tmpMessage(message) {
+    this.tmpMessageSubject$.next(message);
   }
 
 }
