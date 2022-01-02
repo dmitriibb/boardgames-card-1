@@ -29,4 +29,6 @@ public class CardDescriptionDTO {
 
     private int swords;
 
+    private String imageName;
+
 }

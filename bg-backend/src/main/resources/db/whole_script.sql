@@ -27,7 +27,8 @@ create table card_descriptions (
     crosses int(1) not null default 0,
     anchors int(1) not null default 0,
     swords int(2) not null default 0,
-    amount int(2) not null default 0
+    amount int(2) not null default 0,
+    image_name varchar(100)
 );
 
 create table games (
@@ -70,4 +71,10 @@ create table cards (
     constraint cards_player_id_fk foreign key(player_id) references players(id),
     index cards_game_id_indx (game_id),
     index cards_player_id_indx (player_id)
+);
+
+create table images (
+    id int(10) PRIMARY KEY AUTO_INCREMENT,
+    name varchar(100),
+    value mediumblob
 );

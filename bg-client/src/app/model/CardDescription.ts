@@ -10,6 +10,9 @@ export class CardDescription {
   crosses: number;
   anchors: number;
   swords: number;
+  imageName: string;
+  hasImage: boolean = false;
+  image: any;
 
   fromObj(obj) {
     Object.assign(this, obj);

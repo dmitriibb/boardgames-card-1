@@ -1,4 +1,4 @@
-type,name,color,coins,swords,houses,crosses,anchors,points,amount
+type,name,color,coins,swords,houses,crosses,anchors,points,amount,imageName
 PERSON,Trader,GREEN,3,0,0,0,0,1,1
 PERSON,Trader,BLACK,3,0,0,0,0,1,1
 PERSON,Trader,RED,3,0,0,0,0,1,1
@@ -13,12 +13,12 @@ PERSON,Settler,,4,0,1,0,0,1,5
 PERSON,Priest,,4,0,0,1,0,1,5
 PERSON,Captain,,4,0,0,0,1,1,5
 PERSON,Jack of all Trades,,6,0,1,1,1,1,3
-PERSON,Sailor,,3,1,0,0,0,1,4
-PERSON,Sailor,,5,1,0,0,0,2,3
-PERSON,Sailor,,7,1,0,0,0,3,3
-PERSON,Pirate,,5,2,0,0,0,1,4
-PERSON,Pirate,,7,2,0,0,0,2,3
-PERSON,Pirate,,9,2,0,0,0,3,3
+PERSON,Sailor,,3,1,0,0,0,1,4,sailor_3_1_1
+PERSON,Sailor,,5,1,0,0,0,2,3,sailor_5_1_2
+PERSON,Sailor,,7,1,0,0,0,3,3,sailor_7_1_3
+PERSON,Pirate,,5,2,0,0,0,1,4,pirate_5_2_1
+PERSON,Pirate,,7,2,0,0,0,2,3,pirate_7_2_2
+PERSON,Pirate,,9,2,0,0,0,3,3,pirate_9_2_3
 PERSON,Madam,,7,0,0,0,0,2,2
 PERSON,Madam,,9,0,0,0,0,4,2
 PERSON,Jester,,5,0,0,0,0,1,2

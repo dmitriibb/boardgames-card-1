@@ -2,15 +2,17 @@ package com.dmbb.boardgame.cards.util;
 
 import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.entity.Card;
+import com.dmbb.boardgame.cards.model.entity.Image;
+import com.dmbb.boardgame.cards.repository.ImageRepository;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.aspectj.util.FileUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,10 @@ public class MyUtils {
     private static Map<String, Object> csvLineToMap(String[] headers, String[] line) {
         Map<String, Object> map = new HashMap<>();
         for (int i = 0; i < headers.length; i++) {
+            if (line.length < i+1) {
+                log.info("no value for " + headers[i]);
+                continue;
+            }
             map.put(headers[i], line[i]);
         }
         return map;
@@ -65,6 +71,54 @@ public class MyUtils {
                 .filter(p -> p.getId() != playerExcludeId)
                 .sorted(Comparator.comparing(PlayerShortDTO::getOrder))
                 .collect(Collectors.toList());
+    }
+
+    public static void uploadImagesToDB(ImageRepository imageRepository) {
+        Resource imagesFolder = new ClassPathResource("data/images");
+
+        List<File> imageFiles;
+
+        try {
+            imageFiles = Arrays.asList(imagesFolder.getFile().listFiles());
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return;
+        }
+
+        imageFiles.forEach(file -> uploadImageFile(file, imageRepository));
+    }
+
+    private static void uploadImageFile(File file, ImageRepository imageRepository) {
+        int extDotIndex = file.getName().lastIndexOf(".");
+        String name = file.getName().substring(0, extDotIndex);
+        String content = null;
+        try {
+            content = Base64.getEncoder().encodeToString(FileUtil.readAsByteArray(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*try (FileReader fileReader = new FileReader(file);
+             BufferedReader reader = new BufferedReader(fileReader)) {
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            content = sb.toString();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return;
+        }*/
+
+        if (StringUtils.isEmpty(content)) {
+            log.error("Empty content for " + file.getName());
+            return;
+        }
+
+        Image image = new Image();
+        image.setName(name);
+        image.setValue(content);
+        imageRepository.save(image);
     }
 
 }

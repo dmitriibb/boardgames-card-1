@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {BASE_URL} from "../core/constants";
 import {StateService} from "./state.service";
 import {Observable} from "rxjs";
+import {yearsPerPage} from "@angular/material/datepicker";
 
 
 @Injectable({
@@ -35,6 +36,10 @@ export class ApiService {
 
   getCardDescriptions(): Observable<any> {
     return this.http.get(BASE_URL + '/card/descriptions', {headers: this.getBaseHeaders()});
+  }
+
+  getCardImages(): Observable<any> {
+    return this.http.get(BASE_URL + '/card/images', {headers: this.getBaseHeaders()});
   }
 
   sendUserMessage(message) {

@@ -1,6 +1,10 @@
 <div class="container bg-card">
 
-  <ng-template #ship [ngIf]="card.description.type === 'SHIP'">
+  <ng-template #image [ngIf]="card.description.hasImage">
+    <img [src]="card.description.image" >
+  </ng-template>
+
+  <ng-template #ship [ngIf]="!card.description.hasImage && card.description.type === 'SHIP'">
     <div class="col">
       <div class="row card-header "
            [ngClass]="{
@@ -43,7 +47,7 @@
     </div>
   </ng-template>
 
-  <ng-template #person [ngIf]="card.description.type === 'PERSON'">
+  <ng-template #person [ngIf]="!card.description.hasImage && card.description.type === 'PERSON'">
     <div class="col">
       <div class="row card-header ">
         <div class="col-10 card-header-person-props"
@@ -87,7 +91,7 @@
     </div>
   </ng-template>
 
-  <ng-template #otherCard [ngIf]="card.description.type !== 'SHIP' && card.description.type !== 'PERSON'">
+  <ng-template #otherCard [ngIf]="!card.description.hasImage && card.description.type !== 'SHIP' && card.description.type !== 'PERSON'">
     <div class="col" >
       <div class="row"><p>id: {{card.id}}</p></div>
       <div class="row"><p>name: {{card.description.name}}</p></div>

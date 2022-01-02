@@ -38,6 +38,9 @@ public class CardDescription {
 
     private int amount;
 
+    @Column(name = "image_name")
+    private String imageName;
+
     public CardDescriptionDTO toDTO() {
         CardDescriptionDTO dto = new CardDescriptionDTO();
         dto.setId(id);
@@ -50,6 +53,7 @@ public class CardDescription {
         dto.setCrosses(crosses);
         dto.setAnchors(anchors);
         dto.setSwords(swords);
+        dto.setImageName(imageName);
         return dto;
     }
 
