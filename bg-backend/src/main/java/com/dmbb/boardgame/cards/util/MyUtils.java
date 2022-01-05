@@ -95,20 +95,8 @@ public class MyUtils {
         try {
             content = Base64.getEncoder().encodeToString(FileUtil.readAsByteArray(file));
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        /*try (FileReader fileReader = new FileReader(file);
-             BufferedReader reader = new BufferedReader(fileReader)) {
-            StringBuffer sb = new StringBuffer();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
-            }
-            content = sb.toString();
-        } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return;
-        }*/
+        }
 
         if (StringUtils.isEmpty(content)) {
             log.error("Empty content for " + file.getName());

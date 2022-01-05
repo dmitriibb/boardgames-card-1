@@ -6,6 +6,8 @@ import {take} from "rxjs/operators";
 import {WebSocketAPI} from "./WebSocketAPI";
 import {CardClickDTO} from "../model/CardClickDTO";
 import {DomSanitizer} from "@angular/platform-browser";
+import {GameUpdateDTO} from "../model/GameUpdateDTO";
+import {CardDTO} from "../model/CardDTO";
 
 @Injectable({
   providedIn: 'root'
@@ -58,7 +60,6 @@ export class CardService {
         value.image = this.sanitizer.bypassSecurityTrustUrl('data:image/png;charset=utf-8;base64,' + image);
         value.hasImage = true;
       }
-
     });
   }
 
@@ -70,6 +71,29 @@ export class CardService {
     }
     this.wevSocketAPI.send(message);
   }
+
+  enrichGameUpdateDTOCardsWithDescriptionsAndImages(gameUpdateDTO: GameUpdateDTO): GameUpdateDTO {
+    gameUpdateDTO.table.forEach(card => {
+      card.description = this.getDescription(card.descriptionId);
+      card.clickable = true;
+    });
+
+    gameUpdateDTO.me.cards.forEach(card => {
+      card.description = this.getDescription(card.descriptionId);
+      card.clickable = false;
+    })
+
+    gameUpdateDTO.otherPlayers.forEach(player => {
+      player.cards.forEach(card => {
+        card.description = this.getDescription(card.descriptionId);
+        card.clickable = false;
+      })
+    })
+
+    return gameUpdateDTO;
+  }
+
+
 
 
 

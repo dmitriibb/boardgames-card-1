@@ -9,15 +9,12 @@ import com.dmbb.boardgame.cards.model.dto.ServerMessageDTO;
 import com.dmbb.boardgame.cards.model.entity.*;
 import com.dmbb.boardgame.cards.model.enums.*;
 import com.dmbb.boardgame.cards.repository.GameRepository;
-import com.dmbb.boardgame.cards.repository.PlayerRepository;
 import com.dmbb.boardgame.cards.service.CardService;
 import com.dmbb.boardgame.cards.service.GameService;
 import com.dmbb.boardgame.cards.service.PlayerService;
 import com.dmbb.boardgame.cards.util.MyUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -84,6 +81,7 @@ public class GameServiceImpl implements GameService {
         log.info(user.getName() + " is drawing card from deck for game id: " + gameId);
         Game game = getGameById(gameId);
         validateActivePlayer(user, game);
+        validateMainPlayer(user, game);
         Card card = cardService.getCardFromDeck(game);
         sendGameUpdateToPlayers(game);
 
@@ -330,6 +328,13 @@ public class GameServiceImpl implements GameService {
 
         if (!player.getUser().equals(user))
             throw new RuleViolationException("You are not the active player");
+    }
+
+    private void validateMainPlayer(User user, Game game) {
+        Player player = playerService.getPlayerById(game.getMainPlayerId());
+
+        if (!player.getUser().equals(user))
+            throw new RuleViolationException("You are not the main player");
     }
 
     private Game getGameById(int gameId) {

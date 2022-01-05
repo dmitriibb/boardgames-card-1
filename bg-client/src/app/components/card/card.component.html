@@ -1,7 +1,22 @@
-<div class="container bg-card">
+<div class="bg-card-size-wrapper bg-card">
 
   <ng-template #image [ngIf]="card.description.hasImage">
-    <img [src]="card.description.image" >
+    <img class="card-image" [src]="card.description.image" >
+    <div *ngIf="card.clickable" class="row">
+
+      <div *ngIf="card.description.type === 'SHIP'" class="col-2">
+        <button (click)="sellShip()">sell</button>
+      </div>
+
+      <div *ngIf="card.description.type === 'SHIP'" class="col-2">
+        <button (click)="destroyShip()">destroy</button>
+      </div>
+
+      <div *ngIf="card.description.type === 'PERSON'" class="col-2">
+        <button (click)="buyPerson()">buy</button>
+      </div>
+
+    </div>
   </ng-template>
 
   <ng-template #ship [ngIf]="!card.description.hasImage && card.description.type === 'SHIP'">
