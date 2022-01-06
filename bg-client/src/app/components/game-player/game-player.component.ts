@@ -32,8 +32,7 @@ export class GamePlayerComponent implements OnInit, OnChanges {
         const firstChildren = children[0];
         firstChildren.classList.add("active");
       }
-      console.log(this.playerCardsCarousel);
-    }, 200);
+    }, 20);
 
   }
 

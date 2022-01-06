@@ -40,17 +40,17 @@
 
     <div class="col-7">
 
-      <div id="playerCarouselWrapper_" class="carousel slide" data-bs-ride="carousel">
+      <div [attr.id]="'playerCarouselWrapper_' + player.id" class="carousel slide" data-bs-ride="carousel">
         <div #playerCardsCarousel class="carousel-inner">
           <div *ngFor="let card of player.cards" class="carousel-item">
             <bg-card [card]="card"></bg-card>
           </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#playerCarouselWrapper_" data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#playerCarouselWrapper_' + player.id" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#playerCarouselWrapper_" data-bs-slide="next">
+        <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#playerCarouselWrapper_' + player.id" data-bs-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Next</span>
         </button>

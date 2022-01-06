@@ -10,7 +10,7 @@ SHIP,Fluyt,BLUE,3,5,3,fluyt_3_5
 SHIP,Frigate,RED,1,1,3,frigate_1_1
 SHIP,Frigate,RED,2,3,3,frigate_2_3
 SHIP,Frigate,RED,3,6,2,frigate_3_6
-SHIP,Frigate,RED,4,99,2,,frigate_4_99
+SHIP,Frigate,RED,4,99,2,frigate_4_99
 SHIP,Bark,GREEN,1,1,4,bark_1_1
 SHIP,Bark,GREEN,3,3,3,bark_3_3
 SHIP,Bark,GREEN,4,5,3,bark_4_5
