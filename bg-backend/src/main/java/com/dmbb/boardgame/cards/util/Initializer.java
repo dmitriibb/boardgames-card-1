@@ -9,6 +9,7 @@ import com.dmbb.boardgame.cards.model.enums.UserRoles;
 import com.dmbb.boardgame.cards.repository.*;
 import com.dmbb.boardgame.cards.service.GameInfoService;
 import com.dmbb.boardgame.cards.service.GameService;
+import com.dmbb.boardgame.cards.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,7 @@ public class Initializer {
     private final PlayerRepository playerRepository;
     private final GameInfoService gameInfoService;
     private final GameService gameService;
+    private final ImageService imageService;
 
     @PostConstruct
     public void init() {
@@ -41,6 +43,8 @@ public class Initializer {
         initUsers();
         initCardDescriptions();
         initGames();
+
+        imageService.uploadAllImages();
     }
 
     private void initUsers() {

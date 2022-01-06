@@ -10,3 +10,7 @@
 .player-waiting-border {
   border: black dashed 4px;
 }
+
+.player-coin-image {
+  image-rendering: initial;
+}

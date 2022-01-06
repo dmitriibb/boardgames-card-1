@@ -1,7 +1,9 @@
 package com.dmbb.boardgame.cards.controller;
 
 import com.dmbb.boardgame.cards.model.dto.CardDescriptionDTO;
+import com.dmbb.boardgame.cards.model.dto.ImageDTO;
 import com.dmbb.boardgame.cards.service.CardService;
+import com.dmbb.boardgame.cards.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,10 +19,16 @@ import java.util.Map;
 public class CardController {
 
     private final CardService cardService;
+    private final ImageService imageService;
 
     @GetMapping("/descriptions")
     public List<CardDescriptionDTO> getCardDescriptionsMap() {
         return cardService.getCardDescriptions();
+    }
+
+    @GetMapping("/images")
+    public List<ImageDTO> getCardDescriptionImages() {
+        return imageService.getAllImages();
     }
 
 }

@@ -58,16 +58,13 @@ export class GameComponent implements OnInit, OnDestroy {
     this.unsubscribeSubject$.unsubscribe();
   }
 
-  private loadGameUpdate(gameUpdate) {
+  private loadGameUpdate(gameUpdateDTO) {
+    const gameUpdate = this.cardService.enrichGameUpdateDTOCardsWithDescriptionsAndImages(gameUpdateDTO);
     this.stateService.setGameId(gameUpdate.id);
     this.game = gameUpdate;
     this.me = gameUpdate.me;
     this.players = gameUpdate.otherPlayers;
     this.cardsInDeck = gameUpdate.cardsInDeck;
-    this.game.table = this.game.table.map(card => {
-      card.description = this.cardService.getDescription(card.descriptionId);
-      return card;
-    })
   }
 
   playerPass() {

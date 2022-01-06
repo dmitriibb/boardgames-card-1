@@ -2,11 +2,14 @@ package com.dmbb.boardgame.cards.controller;
 
 import com.dmbb.boardgame.cards.config.Constants;
 import com.dmbb.boardgame.cards.model.dto.GameUpdateDTO;
+import com.dmbb.boardgame.cards.model.dto.ImageDTO;
 import com.dmbb.boardgame.cards.model.dto.ServerMessageDTO;
 import com.dmbb.boardgame.cards.model.dto.PlayerShortDTO;
 import com.dmbb.boardgame.cards.model.entity.CardDescription;
 import com.dmbb.boardgame.cards.model.enums.ServerMessageType;
+import com.dmbb.boardgame.cards.repository.ImageRepository;
 import com.dmbb.boardgame.cards.service.GameService;
+import com.dmbb.boardgame.cards.service.ImageService;
 import com.dmbb.boardgame.cards.service.MessageReceiverService;
 import com.dmbb.boardgame.cards.service.PlayerService;
 import com.dmbb.boardgame.cards.util.MyUtils;
@@ -23,6 +26,8 @@ public class HomeController {
 
     private final PlayerService playerService;
     private final GameService gameService;
+    private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @GetMapping
     public String test() {
@@ -57,4 +62,15 @@ public class HomeController {
         ServerMessageDTO dto = new ServerMessageDTO(ServerMessageType.SHORT_MESSAGE, message);
         playerService.sendMessageToUser(username, Constants.TOPIC_MESSAGES, dto);
     }
+
+    @GetMapping("/upload-images")
+    public void uploadImages() {
+        MyUtils.uploadImagesToDB(imageRepository);
+    }
+
+    @GetMapping("/images")
+    public List<ImageDTO> getImages() {
+        return imageService.getAllImages().subList(0, 2);
+    }
+
 }

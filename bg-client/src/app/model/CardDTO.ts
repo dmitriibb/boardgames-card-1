@@ -4,6 +4,7 @@ export class CardDTO {
   id: number;
   descriptionId: number;
   description: CardDescription;
+  clickable: boolean = true;
 
   constructor() {
     this.description = new CardDescription();

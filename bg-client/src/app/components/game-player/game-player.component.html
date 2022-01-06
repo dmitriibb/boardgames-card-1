@@ -3,26 +3,59 @@
      'player-main-border': player.main && !player.active,
      'player-waiting-border': !player.main && !player.active}">
   <div class="row">
-    <div class="col-6 player-info">
-      <div class="row row-cols-2">
-        <div class="col"><p>name:{{player.name}}</p></div>
-        <div class="col"><p>main:{{player.main}}</p></div>
-        <div class="col"><p>active:{{player.active}}</p></div>
-        <div class="col"><p></p>coins:{{player.coins}}</div>
-        <div class="col"><p></p>points:{{player.points}}</div>
-        <div class="col"><p></p>swords:{{player.swords}}</div>
+    <div class="col-5 player-info">
+      <div class="row">
+        <div class="col"><p [textContent]="player.name"></p></div>
+        <div class="col">
+          <img src="assets/shield_1.png">
+          <p [textContent]="player.points"></p>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col">
+          <img  src="assets/coin_1.png">
+          <p [textContent]="player.coins"></p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <img src="assets/sword_1.png">
+          <p [textContent]="player.swords"></p>
+        </div>
+      </div>
+
+      <div class="row">
         <div class="col"><p></p>crosses:{{player.crosses}}</div>
+      </div>
+      <div class="row">
         <div class="col"><p></p>houses:{{player.houses}}</div>
+      </div>
+      <div class="row">
         <div class="col"><p></p>anchors:{{player.anchors}}</div>
       </div>
 
     </div>
-    <div class="col-6 player-cards">
-      <div class="row row-cols-4">
-        <div class="col" *ngFor="let card of player.cards">
-          <bg-card [card]="card" ></bg-card>
+
+    <div class="col-7">
+
+      <div [attr.id]="'playerCarouselWrapper_' + player.id" class="carousel slide" data-bs-ride="carousel">
+        <div #playerCardsCarousel class="carousel-inner">
+          <div *ngFor="let card of player.cards" class="carousel-item">
+            <bg-card [card]="card"></bg-card>
+          </div>
         </div>
+        <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#playerCarouselWrapper_' + player.id" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#playerCarouselWrapper_' + player.id" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
     </div>
+
   </div>
 </div>

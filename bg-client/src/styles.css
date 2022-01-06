@@ -1,10 +1,23 @@
+
+.bg-card-size-wrapper {
+  min-height: 280px;
+  min-width: 176px;
+  height: 280px;
+  width: 176px;
+  margin: 0;
+  padding: 0;
+}
+
 .bg-card {
-  height: 270px;
-  max-height: 270px;
-  width: 150px;
-  max-width: 150px;
   border: black solid 1px;
   border-radius: 10%;
   background-color: rgba(101, 99, 99, 0.96);
   color: white;
+}
+
+.card-image {
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
 }
