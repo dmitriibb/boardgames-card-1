@@ -14,3 +14,23 @@
 .player-coin-image {
   image-rendering: initial;
 }
+
+.display-inline {
+  display: inline-block;
+}
+
+.player-property-icon {
+  margin: 5px;
+  width: 2em;
+  height: 2em;
+}
+
+.player-points-icon {
+  margin: 10px;
+  width: 1.7em;
+  height: 2em;
+}
+
+.players-cards {
+  vertical-align: center;
+}
