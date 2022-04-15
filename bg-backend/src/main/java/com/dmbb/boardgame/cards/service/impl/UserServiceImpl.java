@@ -21,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import javax.jws.soap.SOAPBinding;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;

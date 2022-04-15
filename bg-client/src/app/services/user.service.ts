@@ -14,9 +14,6 @@ import {Location} from "@angular/common";
 })
 export class UserService {
 
-  private userDimaAuth = 'Basic ZGltYUB0ZXN0LmNvbTpxd2VydHk=';
-  private userJohnAuth = 'Basic am9obkB0ZXN0LmNvbTpxd2VydHky';
-
   private currentUser: UserShortDTO;
 
   constructor(private api: ApiService,
@@ -42,7 +39,10 @@ export class UserService {
       this.cardService.uploadCardDescriptions();
       this.webSocketApi._connect();
       this.router.navigateByUrl('/home');
-    }, error => this.notificationService.errorHttpRequest(error));
+    }, error => {
+      this.notificationService.errorHttpRequest(error);
+      this.router.navigateByUrl('/login');
+    });
   }
 
   logout() {

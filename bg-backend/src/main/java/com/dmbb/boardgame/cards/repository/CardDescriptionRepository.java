@@ -28,4 +28,5 @@ public interface CardDescriptionRepository extends JpaRepository<CardDescription
     int countByPlayerAndStatusAndNameAndTypeAndColor(Player player, CardStatus cardStatus,
                                               String cardDescriptionName, CardType cardType,
                                               CardColor color);
+
 }

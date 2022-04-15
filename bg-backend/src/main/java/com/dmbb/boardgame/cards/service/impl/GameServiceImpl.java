@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class GameServiceImpl implements GameService {
 
-    private final static int INIT_CARD_AMOUNT = 3;
+    private final static int INIT_COINS_AMOUNT = 10;
 
     private final GameRepository gameRepository;
     private final CardService cardService;
@@ -65,13 +65,6 @@ public class GameServiceImpl implements GameService {
         Game game = userGamesInProgress.get(0);
         GameUpdateDTO gameUpdateDTO = gameEntityToUpdateDTO(game);
 
-        PlayerShortDTO me = gameUpdateDTO.getOtherPlayers()
-                .stream()
-                .filter(p -> p.getUsername().equals(user.getUsername()))
-                .findFirst().get();
-
-        gameUpdateDTO.setMe(me);
-        gameUpdateDTO.setOtherPlayers(MyUtils.copyPlayersDTOListExclude(gameUpdateDTO.getOtherPlayers(), me.getId()));
         ServerMessageDTO messageDTO = new ServerMessageDTO(ServerMessageType.GAME_UPDATE, gameUpdateDTO);
         playerService.sendMessageToUser(user.getUsername(), Constants.TOPIC_MESSAGES, messageDTO);
     }
@@ -80,8 +73,7 @@ public class GameServiceImpl implements GameService {
     public void drawCardFromDeck(User user, int gameId) {
         log.info(user.getName() + " is drawing card from deck for game id: " + gameId);
         Game game = getGameById(gameId);
-        validateActivePlayer(user, game);
-        validateMainPlayer(user, game);
+        validateActiveAndMainPlayer(user, game);
         Card card = cardService.getCardFromDeck(game);
         sendGameUpdateToPlayers(game);
 
@@ -102,7 +94,7 @@ public class GameServiceImpl implements GameService {
     }
 
     private void throwGameTableToGarbage(Game game) {
-        List<Card> cardsTable = cardService.getCardGameTable(game);
+        List<Card> cardsTable = cardService.getCardsOnTable(game);
         cardsTable.forEach(card -> {
             card.setStatus(CardStatus.GARBAGE);
             cardService.save(card);
@@ -119,7 +111,7 @@ public class GameServiceImpl implements GameService {
         Player player = playerService.getPlayerByGameAndUser(user, game);
 
         int coinsToPlayer = cardDescription.getCoins();
-        coinsToPlayer += cardService.additionalCoinsForShipColor(player, cardDescription.getColor());
+        coinsToPlayer += cardService.tradersNumberOfPlayer(player, cardDescription.getColor());
         cardService.takeCardsAsCoinsToPlayer(player, game, coinsToPlayer);
 
         card.setStatus(CardStatus.GARBAGE);
@@ -141,9 +133,13 @@ public class GameServiceImpl implements GameService {
     @Override
     public void destroyShip(User user, int gameId, int cardId) {
         Game game = getGameById(gameId);
-        validateActivePlayer(user, game);
+        validateActiveAndMainPlayer(user, game);
 
         Card card = cardService.getCardById(cardId);
+        Card lastCardOnTable = cardService.getLastCardOnTable(game);
+        if (!card.equals(lastCardOnTable))
+            throw new RuleViolationException("You can destroy only the last ship");
+
         CardDescription cardDescription = cardService.getCardDescriptionById(card.getCardDescriptionId());
         Player player = playerService.getPlayerByGameAndUser(user, game);
 
@@ -230,7 +226,7 @@ public class GameServiceImpl implements GameService {
         gameDTO.setId(game.getId());
         gameDTO.setMainPlayerId(mainPlayerId);
         gameDTO.setActivePlayerId(activePlayerId);
-        gameDTO.setTable(cardService.getCardGameTable(game)
+        gameDTO.setTable(cardService.getCardsOnTable(game)
                 .stream()
                 .map(Card::toDTO)
                 .collect(Collectors.toList()));
@@ -300,14 +296,14 @@ public class GameServiceImpl implements GameService {
 
     private void distributeFirstCardsForPlayers(Game game, Queue<Card> deck) {
         game.getPlayers().forEach(player -> {
-            for (int i = 0; i < INIT_CARD_AMOUNT; i++) {
+            for (int i = 0; i < INIT_COINS_AMOUNT; i++) {
                 Card card = deck.poll();
                 card.setPlayer(player);
                 card.setStatus(CardStatus.PLAYER_HAND);
                 card.setCoin(true);
                 cardService.save(card);
             }
-            player.setCoins(INIT_CARD_AMOUNT);
+            player.setCoins(INIT_COINS_AMOUNT);
             playerService.savePlayer(player);
         });
     }
@@ -323,17 +319,18 @@ public class GameServiceImpl implements GameService {
             throw new TmpException("Game can be started only in status " + GameStatus.AWAITING);
     }
 
-    private void validateActivePlayer(User user, Game game) {
-        Player player = playerService.getPlayerById(game.getActivePlayerId());
+    private void validateActiveAndMainPlayer(User user, Game game) {
+        if (!gameRepository.userIsActiveAndMainPlayer(user, game))
+            throw new RuleViolationException("You are not the active and main player");
+    }
 
-        if (!player.getUser().equals(user))
+    private void validateActivePlayer(User user, Game game) {
+        if (!gameRepository.userIsActivePlayer(user, game))
             throw new RuleViolationException("You are not the active player");
     }
 
     private void validateMainPlayer(User user, Game game) {
-        Player player = playerService.getPlayerById(game.getMainPlayerId());
-
-        if (!player.getUser().equals(user))
+        if (!gameRepository.userIsMainPlayer(user, game))
             throw new RuleViolationException("You are not the main player");
     }
 

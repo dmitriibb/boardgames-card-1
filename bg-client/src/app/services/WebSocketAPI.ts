@@ -18,7 +18,7 @@ export class WebSocketAPI {
   stompClient: any;
   sessionId: any;
 
-  useRestAPIForSend = true;
+  useRestAPIForSend = false;
 
   constructor(private notificationService: NotificationService,
               private stateService: StateService,
@@ -38,9 +38,10 @@ export class WebSocketAPI {
 
     _this.stompClient.connect(headers, function (frame) {
       let url = _this.stompClient.ws._transport.url;
-      _this.sessionId = url.substr(url.lastIndexOf("/") + 1);
+      const urlTruncated = url.replace('/websocket', '');
+      _this.sessionId = urlTruncated.substr(urlTruncated.lastIndexOf("/") + 1);
 
-      console.log(_this.sessionId)
+      console.log(`connected with session_id: ${_this.sessionId}`)
 
       _this.stompClient.subscribe(_this.destinationToRead + '-user' + _this.sessionId, function (sdkEvent) {
         console.log(sdkEvent);

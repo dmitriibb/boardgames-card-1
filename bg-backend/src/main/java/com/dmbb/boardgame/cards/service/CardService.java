@@ -24,18 +24,18 @@ public interface CardService {
 
     int getCardInDeckNumber(Game game);
 
-    List<Card> getCardGameTable(Game game);
+    List<Card> getCardsOnTable(Game game);
+
+    Card getLastCardOnTable(Game game);
 
     Card getCardFromDeck(Game game);
 
     Card getCardById(int cardId);
 
-    void saveCard(Card card);
-
     void takeCardsAsCoinsToPlayer(Player player, Game game, int coinsNumber);
 
     List<CardDescription> getCardsByGameTypeAndStatus(Game game, CardType type, CardStatus status);
 
-    int additionalCoinsForShipColor(Player player, CardColor cardColor);
+    int tradersNumberOfPlayer(Player player, CardColor cardColor);
 
 }

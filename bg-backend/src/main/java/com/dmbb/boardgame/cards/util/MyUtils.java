@@ -73,7 +73,7 @@ public class MyUtils {
                 .collect(Collectors.toList());
     }
 
-    public static void uploadImagesToDB(ImageRepository imageRepository) {
+    public static List<Image> readImagesFromFile() {
         Resource imagesFolder = new ClassPathResource("data/images");
 
         List<File> imageFiles;
@@ -82,13 +82,16 @@ public class MyUtils {
             imageFiles = Arrays.asList(imagesFolder.getFile().listFiles());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return;
+            return new ArrayList<>();
         }
 
-        imageFiles.forEach(file -> uploadImageFile(file, imageRepository));
+        return imageFiles.stream()
+                .map(MyUtils::imageFromFileToEntity)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
-    private static void uploadImageFile(File file, ImageRepository imageRepository) {
+    private static Image imageFromFileToEntity(File file) {
         int extDotIndex = file.getName().lastIndexOf(".");
         String name = file.getName().substring(0, extDotIndex);
         String content = null;
@@ -100,13 +103,13 @@ public class MyUtils {
 
         if (StringUtils.isEmpty(content)) {
             log.error("Empty content for " + file.getName());
-            return;
+            return null;
         }
 
         Image image = new Image();
         image.setName(name);
         image.setValue(content);
-        imageRepository.save(image);
+        return image;
     }
 
 }

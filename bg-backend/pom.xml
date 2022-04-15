@@ -46,7 +46,7 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-messaging -->
-		<!--
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-messaging</artifactId>
@@ -59,7 +59,7 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
-		-->
+
 
 
 		<dependency>

@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,8 +77,13 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<Card> getCardGameTable(Game game) {
+    public List<Card> getCardsOnTable(Game game) {
         return cardRepository.getCardByGameAndStatusOrderByCardOrder(game, CardStatus.TABLE);
+    }
+
+    @Override
+    public Card getLastCardOnTable(Game game) {
+        return cardRepository.findFirstByGameAndStatusOrderByCardOrderDesc(game, CardStatus.TABLE);
     }
 
     @Override
@@ -99,11 +102,6 @@ public class CardServiceImpl implements CardService {
     public Card getCardById(int cardId) {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> new RuntimeException("card is not found for id: " + cardId));
-    }
-
-    @Override
-    public void saveCard(Card card) {
-        this.cardRepository.save(card);
     }
 
     @Override
@@ -127,7 +125,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public int additionalCoinsForShipColor(Player player, CardColor cardColor) {
+    public int tradersNumberOfPlayer(Player player, CardColor cardColor) {
         return cardDescriptionRepository.countByPlayerAndStatusAndNameAndTypeAndColor(player, CardStatus.PLAYER_TABLE,
                 Constants.CARD_PERSON_TRADER, CardType.PERSON, cardColor);
     }

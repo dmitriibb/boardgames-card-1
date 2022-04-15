@@ -21,13 +21,11 @@ export class StateService {
   }
 
   saveAuth(auth: string) {
-    //localStorage.setItem(STORAGE_USER, JSON.stringify(user));
     //localStorage.setItem(AUTHORIZATION_VALUE, auth);
     this._auth = auth;
   }
 
   logout() {
-    //localStorage.removeItem(STORAGE_USER);
     //localStorage.removeItem(AUTHORIZATION_VALUE);
     this._auth = '';
   }

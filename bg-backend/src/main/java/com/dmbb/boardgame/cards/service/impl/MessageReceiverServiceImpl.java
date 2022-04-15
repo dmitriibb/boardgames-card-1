@@ -14,8 +14,9 @@ import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -29,9 +30,10 @@ public class MessageReceiverServiceImpl implements MessageReceiverService {
     private final PlayerService playerService;
 
     private final Executor executor = Executors.newCachedThreadPool();
+    private final Gson gson = new Gson();
 
     @Override
-    @Transactional
+    //@Transactional(propagation = Propagation.NESTED)
     public void messageFromUser(ClientMessageDTO messageDTO, String auth, String username, Integer gameId) {
         log.info("socket message from: " + username);
         //User user = userService.getUserFromBaseAuth(auth);
@@ -42,7 +44,6 @@ public class MessageReceiverServiceImpl implements MessageReceiverService {
         } catch (ClientErrorException e) {
             this.playerService.sendErrorToUser(username, e.getMessage());
         }
-
 
     }
 
@@ -60,9 +61,8 @@ public class MessageReceiverServiceImpl implements MessageReceiverService {
         });
     }
 
-    @Transactional
+    //@Transactional
     public void processMessage(User user, ClientMessageDTO messageDTO, Integer gameId) {
-        Gson gson = new Gson();
         CardClickDTO cardClickDTO;
 
         switch (messageDTO.getType()) {
