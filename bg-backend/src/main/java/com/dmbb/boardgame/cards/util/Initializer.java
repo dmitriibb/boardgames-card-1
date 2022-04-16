@@ -33,12 +33,14 @@ public class Initializer {
     private final GameInfoService gameInfoService;
     private final GameService gameService;
     private final ImageService imageService;
+    private final ImageRepository imageRepository;
 
     @PostConstruct
     public void init() {
         cardRepository.deleteAll();
         playerRepository.deleteAll();
         gameRepository.deleteAll();
+        imageRepository.deleteAll();
 
         initUsers();
         initCardDescriptions();

@@ -4,6 +4,9 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
+**/data/images_big/
+
 ### STS ###
 .apt_generated
 .classpath

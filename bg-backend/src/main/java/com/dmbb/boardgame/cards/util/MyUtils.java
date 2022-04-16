@@ -74,7 +74,7 @@ public class MyUtils {
     }
 
     public static List<Image> readImagesFromFile() {
-        Resource imagesFolder = new ClassPathResource("data/images");
+        Resource imagesFolder = new ClassPathResource("data/images_3");
 
         List<File> imageFiles;
 
